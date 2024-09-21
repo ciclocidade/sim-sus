@@ -257,7 +257,7 @@ if (window.hljs) {
 div.csl-bib-body { }
 div.csl-entry {
 clear: both;
-margin-bottom: 0em;
+margin-bottom: 1em;
 }
 .hanging div.csl-entry {
 margin-left:2em;
@@ -406,7 +406,7 @@ sim_sus &lt;- sim_sus %&gt;% mutate(ANOOBITO = str_sub(.$DTOBITO, -4), .before =
 trânsito são definidas no documento <strong>WHO methods and data sources
 for country-level causes of death 2000-2019</strong> [Métodos e fontes
 de dados da OMS para as causas de morte a nível nacional 2000-2019]
-<span class="citation">(<a href="#ref-who2020">WHO 2020</a>)</span>.
+<span class="citation">(<a href="#ref-who2020">WHO, 2020</a>)</span>.
 Para países em que a CID-10 possui quatro caracteres, como é o caso do
 Brasil, os códigos a serem filtrados são os seguintes:</p>
 <pre><code>ICD-10 codes: V01-V04, V06 (.1-.9), V09 (.2-.3), V10- V14 (.3-.9), V15-V19 (.4-.9), V20-V28 (.3-.9), V29- V79 (.4-.9), V80 (.3-.5), V81.1, V82 (.1, .8-.9), V83-V86 (.0-.3), V87 (.0-.9), V89 (.2-.3, .9), V99, Y85.0</code></pre>
@@ -495,8 +495,8 @@ road_injuries &lt;-
 <p>Utilizados desta forma, resultarão nos mesmos números apresentados na
 plataforma <strong>WHO Mortality Database - Road Traffic
 Accidents</strong> [Base de Mortalidade da OMS - Sinistros de Trânsito]
-<span class="citation">(<a href="#ref-who2022">WHO 2022</a>)</span>, que
-possui dados para o Brasil até o ano de 2020.</p>
+<span class="citation">(<a href="#ref-who2022">WHO, 2022</a>)</span>,
+que possui dados para o Brasil até o ano de 2020.</p>
 </div>
 <div id="baixando-as-bases-do-sim-sus-pelo-r" class="section level2">
 <h2>Baixando as bases do SIM-SUS pelo R</h2>
@@ -615,13 +615,20 @@ whether traffic or nontraffic accident</em>]</td>
 <p>Note that the <code>echo = FALSE</code> parameter was added to the
 code chunk to prevent printing of the R code that generated the
 plot.</p>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+</div>
+<div id="referências" class="section level2 unnumbered">
+<h2 class="unnumbered">Referências</h2>
+<div id="refs" class="references csl-bib-body" entry-spacing="1">
 <div id="ref-who2020" class="csl-entry">
-WHO, World Health Organization. 2020. <span>“WHO Methods and Data
-Sources for Country-Level Causes of Death 2000-2019.”</span> Geneva. <a href="https://www.who.int/docs/default-source/gho-documents/global-health-estimates/ghe2019_cod_methods.pdf">https://www.who.int/docs/default-source/gho-documents/global-health-estimates/ghe2019_cod_methods.pdf</a>.
+WHO, World Health Organization. <strong>WHO methods and data sources for
+country-level causes of death 2000-2019</strong>. Geneva: World Health
+Organization, 2020. Disponível em: <a href="https://www.who.int/docs/default-source/gho-documents/global-health-estimates/ghe2019_cod_methods.pdf">https://www.who.int/docs/default-source/gho-documents/global-health-estimates/ghe2019_cod_methods.pdf.
+</a>.
 </div>
 <div id="ref-who2022" class="csl-entry">
-———. 2022. <span>“WHO Mortality Database.”</span> <a href="https://platform.who.int/mortality/themes/theme-details/topics/indicator-groups/indicator-group-details/MDB/road-traffic-accidents">https://platform.who.int/mortality/themes/theme-details/topics/indicator-groups/indicator-group-details/MDB/road-traffic-accidents</a>.
+WHO, World Health Organization. <strong>WHO Mortality Database</strong>.
+Geneva, 2022. Disponível em: <a href="https://platform.who.int/mortality/themes/theme-details/topics/indicator-groups/indicator-group-details/MDB/road-traffic-accidents">https://platform.who.int/mortality/themes/theme-details/topics/indicator-groups/indicator-group-details/MDB/road-traffic-accidents.
+</a>
 </div>
 </div>
 </div>
