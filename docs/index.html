@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2024-09-22" />
+<meta name="date" content="2024-09-23" />
 
 <title>Texto para Discussão - Como padronizar a extração de dados do SIM-SUS para estimar mortes no trânsito</title>
 
@@ -374,13 +374,14 @@ display: none;
 
 <h1 class="title toc-ignore">Texto para Discussão - Como padronizar a
 extração de dados do SIM-SUS para estimar mortes no trânsito</h1>
-<h4 class="date">2024-09-22</h4>
+<h4 class="date">2024-09-23</h4>
 
 </div>
 
 
 <div id="apresentando-o-problema" class="section level2">
 <h2>Apresentando o problema</h2>
+<p><br></p>
 <p>O SIM-SUS <span class="citation">(<a href="#ref-brasil2024">Brasil,
 2024</a>)</span> é a principal base de dados consolidada referente a
 mortes no trânsito no Brasil. Não há consenso, porém, sobre quais
@@ -412,8 +413,9 @@ mortes no trânsito</a>, conforme <span class="citation">WHO (<a href="#ref-who2
 <li><p><a href="#discussao_cid10">Discussão sobre a redistribuição dos
 dados de categorias genéricas</a>;</p></li>
 <li><p><a href="#redistribuir_cid10">Redistribuição dos dados de
-categorias genéricas</a>, também conforme <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span>;</p></li>
-<li><p>Resultados e discussão;</p></li>
+intenção indeterminada</a>, também conforme <span class="citation">WHO
+(<a href="#ref-who2020">2020</a>)</span>;</p></li>
+<li><p><a href="#resultados">Resultados e discussão</a>;</p></li>
 <li><p>Referências utilizadas.</p></li>
 </ol>
 <p><br><a name="baixar_bases"></a></p>
@@ -474,13 +476,11 @@ download das bases de dados.</p>
 </div>
 <div id="como-filtrar-sinistros-de-trânsito-na-base-do-sim-sus" class="section level2">
 <h2>Como filtrar sinistros de trânsito na base do SIM-SUS</h2>
+<p><br></p>
 <p>O código a seguir lê todos os anos da base do SIM-SUS como um único
 dataframe, seleciona as colunas de DTOBITO e CAUSABAS e cria uma coluna
 de ano a partir de DTOBITO.</p>
-<pre class="r"><code># Importar bibliotecas necessárias
-library(&#39;read.dbc&#39;)
-
-# Ler arquivos originais compactados em .dbc como dataframes
+<pre class="r"><code># Ler arquivos originais compactados em .dbc como dataframes
 sim_sus &lt;- list.files(path       = sim_sus_folder, 
                       pattern    = &#39;DOEXT...DBC&#39;,
                       recursive  = FALSE,
@@ -505,11 +505,36 @@ Brasil, os códigos a serem filtrados são os seguintes:</p>
 <p><br></p>
 <p>O script em R para executar este filtro e agrupar os resultados por
 ano é apresentado a seguir.</p>
-<pre class="r"><code># Road injuries
-road_injuries &lt;-
-  sim_sus %&gt;%
-  filter(
-    str_starts(CAUSABAS, &#39;V0[12346][1-9]&#39;) | str_starts(CAUSABAS, &#39;V09[2-3]&#39;) |
+<pre class="r"><code># ------------------------------------------------------------------------------
+# Funções
+# ------------------------------------------------------------------------------
+
+# Filtra dataframe e agrupa resultados por uma variável (por padrão, ANOOBITO)
+agrupar &lt;- function(df, filter_expr, group_var = expr(ANOOBITO), n_col = &#39;n&#39;) {
+  df %&gt;%
+    filter(!!filter_expr) %&gt;%
+    group_by(!!group_var) %&gt;%
+    tally() %&gt;%
+    ungroup() %&gt;%
+    rename(!!n_col := n)
+}
+# f_expr &lt;- expr(str_starts(CAUSABAS, &#39;Y32&#39;))
+# agrupar(sim_sus, f_expr, n_col = &#39;y32&#39;)
+
+
+# ------------------------------------------------------------------------------
+# Mortes no trânsito
+# ------------------------------------------------------------------------------
+
+# WHO methods and data sources for country-level causes of death 2000-2019
+# https://www.who.int/docs/default-source/gho-documents/global-health-estimates/ghe2019_cod_methods.pdf
+# V01-V04, V06 (.1-.9), V09 (.2-.3), V10- V14 (.3-.9), V15-V19 (.4-.9),
+# V20-V28 (.3-.9), V29- V79 (.4-.9), V80 (.3-.5), V81.1, V82 (.1, .8-.9),
+# V83-V86 (.0-.3), V87 (.0-.9), V89 (.2-.3, .9), V99, Y85.0
+
+# Road injuries
+f_expr &lt;- expr(
+  str_starts(CAUSABAS, &#39;V0[12346][1-9]&#39;) | str_starts(CAUSABAS, &#39;V09[2-3]&#39;) |
     str_starts(CAUSABAS, &#39;V1[0-4][3-9]&#39;) | str_starts(CAUSABAS, &#39;V1[5-9][4-9]&#39;) |
     str_starts(CAUSABAS, &#39;V2[0-8][3-9]&#39;) | str_starts(CAUSABAS, &#39;V29[4-9]&#39;) |
     str_starts(CAUSABAS, &#39;V[3-7][0-9][4-9]&#39;) |
@@ -517,17 +542,17 @@ road_injuries &lt;-
     str_starts(CAUSABAS, &#39;V82[8-9]&#39;) | str_starts(CAUSABAS, &#39;V8[3-6][0-3]&#39;) |
     str_starts(CAUSABAS, &#39;V87[0-9]&#39;) | str_starts(CAUSABAS, &#39;V89[239]&#39;) |
     str_starts(CAUSABAS, &#39;V99&#39;) | str_starts(CAUSABAS, &#39;Y85&#39;)
-  ) %&gt;%
-  group_by(ANOOBITO) %&gt;%
-  tally() %&gt;%
-  ungroup() %&gt;%
-  rename(road_injuries = n)</code></pre>
+)
+road_injuries &lt;- agrupar(sim_sus, f_expr, n_col = &#39;road_injuries&#39;)</code></pre>
+<p><br><a name="tabela1"></a></p>
+<p>Tabela 1. Sinistros de trânsito extraídos conforme <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span>, sem
+redistribuição dos códigos de intenção indeterminada.</p>
 <pre class="r"><code>road_injuries</code></pre>
 <table>
 <thead>
 <tr class="header">
 <th align="center">Ano de óbito</th>
-<th align="center">Total</th>
+<th align="center">Sinistros de trânsito</th>
 </tr>
 </thead>
 <tbody>
@@ -595,6 +620,7 @@ Brasil até o ano de 2020.</p>
 <div id="discussão-sobre-a-redistribuição-dos-dados-de-categorias-genéricas" class="section level2">
 <h2>Discussão sobre a redistribuição dos dados de categorias
 genéricas</h2>
+<p><br></p>
 <p>Conforme comentado ao início do texto, há uma discussão presente na
 literatura que argumenta que utilizar somente os dados das categorias
 previamente selecionadas resulta em um número subestimado de mortes no
@@ -606,7 +632,7 @@ CID-10 genéricas devem ser redisribuídas proporcionalmente para as mais
 específicas é apresentado a seguir.</p>
 <table style="width:100%;">
 <colgroup>
-<col width="5%" />
+<col width="6%" />
 <col width="75%" />
 <col width="18%" />
 </colgroup>
@@ -626,6 +652,11 @@ infância, Capítulo 2)</p>
 <td align="left">V87-V89, V99, Y32-Y34 (Capítulo 5)</td>
 </tr>
 <tr class="even">
+<td align="left"><span class="citation">Aquino; Antunes; Morais Neto (<a href="#ref-aquino2020">2020</a>)</span></td>
+<td align="left">V01 a V89</td>
+<td align="left">V87-V89, V99, Y32-Y34</td>
+</tr>
+<tr class="odd">
 <td align="left"><span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span></td>
 <td align="left">V01-V04, V06 (.1-.9), V09 (.2-.3), V10-V14 (.3-.9),
 V15-V19 (.4-.9), V20-V28 (.3-.9), V29-V79 (.4-.9), V80 (.3-.5), V81.1,
@@ -634,12 +665,20 @@ Y85.0</td>
 <td align="left"><p>Y10-Y34, Y87.2</p>
 <p>(Obs. Redistribuição não presente em <span class="citation">WHO (<a href="#ref-who2022">2022</a>)</span>)</p></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><span class="citation">Bhalla <em>et al.</em> (<a href="#ref-bhalla2023">2023</a>)</span></td>
 <td align="left">V01-V04, V06, V09, V10-V79, V80, V82-V85, V87-V89,
 Y85.0</td>
 <td align="left"><p>V99, X59, Y34, Y85.9, Y87.2, Y89.9</p>
 <p>(Obs. Não considera <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span>)</p></td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="citation">Carvalho; Guedes (<a href="#ref-carvalho2023">2023</a>)</span></td>
+<td align="left"><p>V01 a V89</p>
+<p>(Obs. Outras publicações do IPEA como <span class="citation">Carvalho
+(<a href="#ref-carvalho2020">2020</a>)</span> e <span class="citation">Ferreira (<a href="#ref-ferreira2020">2020</a>)</span>
+sugerem ter seguido a mesma seleção)</p></td>
+<td align="left">Sem redistribuição</td>
 </tr>
 </tbody>
 </table>
@@ -655,13 +694,13 @@ Mortalidade por lesões decorrentes do trânsito no Brasil, 2000 a
 2016</strong> e seleciona todos os códigos dos “acidentes de transporte
 terrestres” (V01 a V89) para, em seguida, reclassificar óbitos com causa
 básica inespecífica (V87 a V89, V99 e Y32 a Y34) proporcionalmente entre
-os grupos específicos.</p>
+os grupos específicos. Esta é a mesma abordagem presente em <span class="citation">Aquino; Antunes; Morais Neto (<a href="#ref-aquino2020">2020</a>)</span>.</p>
 <p><span class="citation">Bhalla <em>et al.</em> (<a href="#ref-bhalla2023">2023</a>)</span> seleciona boa parte dos códigos
 de acidentes de transporte terrestres, o código Y85.0 - Sequelae of
 motor-vehicle accident [Sequelas de acidente com veículo motorizado] e
 propõe redistribuir os códigos referentes às causas de morte “não
 especificadas” - seja pelo veículo, seja pela intenção, seja pela
-própria causa da morte. O texto, porém, não retoma uma discussão
+própria causa da morte. O texto, porém, deixa implícita uma discussão
 presente em <span class="citation">Bhalla; Harrison (<a href="#ref-bhalla2015">2015</a>)</span> sobre quais desses códigos se
 refere à porção de mortes “em trânsito” ou “fora do trânsito”, que é
 importante.</p>
@@ -709,7 +748,7 @@ accident</em>]</td>
 <p>Ou seja, ao considerar todos os códigos de acidentes terrestres
 (V01-V89) o que se está observando não é exatamente as “mortes no
 trânsito”, mas especificamente as “mortes resultantes de fazer qualquer
-deslocamento” e que podem ter ocorrido fora da via pública. As
+deslocamento terrestre”, que podem ter ocorrido fora da via pública. As
 definições da seção de <a href="https://icd.who.int/browse10/2019/en#/V01-V99" target="_blank"><strong>Acidentes de Transporte</strong></a> (definições
 A a D), traduzidas a seguir de forma livre, ajudam a ilustrar este
 ponto:</p>
@@ -744,22 +783,633 @@ causa de morte é em trânsito ou não, o que na CID-10 aparece como “não
 especificado” [<em>unspecified</em>], a seleção de <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span> as inclui
 - na prática, considerando-as como em trânsito.</p>
 <p>Finalmente, <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span> propõe a redistribuição
-proporcional dos códigos Y10-Y34 e Y87.2. Os primeiros se referem aos
-“Eventos com intenção não determinada” [<em>Event of undetermined
-intent</em>] (Y10-Y34), definidos como “eventos em que as informações
-disponíveis são insuficientes para permitir que uma autoridade médica ou
-legal faça a distinção entre acidente, automutilação e agressão”. Já o
-código Y87.2 engloba “Sequelas de eventos de intenção indeterminada”
-[<em>Sequelae of events of undetermined intent</em>].</p>
+proporcional dos códigos de <strong>intenção indeterminada</strong>,
+Y10-Y34 e Y87.2. Os primeiros se referem aos “Eventos com intenção não
+determinada” [<em>Event of undetermined intent</em>] (Y10-Y34),
+definidos como “eventos em que as informações disponíveis são
+insuficientes para permitir que uma autoridade médica ou legal faça a
+distinção entre acidente, automutilação e agressão”. Já o código Y87.2
+engloba “Sequelas de eventos de intenção indeterminada” [<em>Sequelae of
+events of undetermined intent</em>].</p>
 <p><br><a name="redistribuir_cid10"></a></p>
 </div>
 </div>
-<div id="redistribuição-dos-dados-de-categorias-genéricas" class="section level2">
-<h2>Redistribuição dos dados de categorias genéricas</h2>
+<div id="redistribuição-dos-dados-de-intenção-indeterminada" class="section level2">
+<h2>Redistribuição dos dados de intenção indeterminada</h2>
+<p><br></p>
+<p>Os códigos de intenção indeterminada, Y10-Y34 e Y87.2, fazem parte
+das causas externas de morbidade e de mortalidade, assim como os números
+de sinistros de trânsito previamente extraídos e apresentados na <a href="#tabela1">Tabela 1</a>. De forma a fazer uma redistribuição
+proporcional conforme <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span>, os passos sugeridos são:</p>
+<ol style="list-style-type: decimal">
+<li><p>Extrair os valores totais de causas externas;</p></li>
+<li><p>Calcular o novo valor de causas externas, excluindo os
+relacionados aos códigos de intenção não determinada (Y10-Y34,
+Y87.2);</p></li>
+<li><p>Calcular o proporcional relativo de sinistros de trânsito frente
+ao novo total das causas externas;</p></li>
+<li><p>Alocar proporcionalmente os valores dos códigos Y10-Y34, Y87.2
+para os sinistros de trânsito.</p></li>
+</ol>
+<p>O código em R para o passo-a-passo descrito acima e seus resultados
+são apresentados a seguir.</p>
+<p><br></p>
+<pre class="r"><code># ------------------------------------------------------------------------------
+# Redistribuição dos códigos de eventos e sequelas - intenção indeterminada (1)
+# ------------------------------------------------------------------------------
+
+# WHO methods and data sources for country-level causes of death 2000-2019
+# https://www.who.int/docs/default-source/gho-documents/global-health-estimates/ghe2019_cod_methods.pdf
+# Injury deaths where the intent is not determined (Y10-Y34, Y87.2) are
+# distributed proportionately to all causes below the group level for injuries.
+
+# Códigos Y10-Y34, Y87.2 fazem parte das external causes, dentro das quais
+# também estão as road injuries, calculadas anteriormente
+f_expr &lt;- expr(str_starts(CAUSABAS, &#39;[VXY]&#39;))
+external_causes &lt;- agrupar(sim_sus, f_expr, n_col = &#39;external_causes&#39;)
+
+# Isolar somente códigos Y10-Y34, Y87.2 - undetermined intent
+f_expr &lt;- expr(str_starts(CAUSABAS, &#39;Y[12]&#39;) |
+               str_starts(CAUSABAS, &#39;Y3[0-4]&#39;) |
+               str_starts(CAUSABAS, &#39;Y872&#39;))
+undefined_intent &lt;- agrupar(sim_sus, f_expr, n_col = &#39;undefined_intent&#39;)
+
+# Calcular novo valor para external causes sem undetermined intent
+external_causes_new &lt;-
+  external_causes %&gt;%
+  left_join(undefined_intent, by = &#39;ANOOBITO&#39;) %&gt;%
+  mutate(external_causes_new = external_causes - undefined_intent)
+
+# Calcular ajuste de road injuries
+road_injuries_adj &lt;-
+  external_causes_new %&gt;%
+  # Fazer cálculos proporcionais para ajustar road injuries
+  left_join(road_injuries, by = &#39;ANOOBITO&#39;) %&gt;%
+  # Qual a proporção das road injuries frente ao total de external causes?
+  mutate(prop_road_inj = road_injuries / external_causes_new,
+         # Qual a proporção de undetermined intent que deverá ser alocada
+         # para road injuries?
+         und_int_alloc = round(undefined_intent * prop_road_inj),
+         # Fazer a alocação em uma nova coluna, new_road_inj
+         new_road_inj  = road_injuries + und_int_alloc,
+         # Calcular percentual de acréscimo frente aos valores anteriores de
+         # road injury
+         road_inj_incr = (new_road_inj - road_injuries) / road_injuries * 100)</code></pre>
+<p><br><a name="tabela2"></a></p>
+<p>Tabela 2. Sinistros de trânsito ajustados com redistribuição dos
+códigos de intenção indeterminada Y10-Y34, Y87.2, conforme <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span>.</p>
+<pre class="r"><code>road_injuries_adjusted</code></pre>
+<table>
+<colgroup>
+<col width="5%" />
+<col width="8%" />
+<col width="8%" />
+<col width="14%" />
+<col width="9%" />
+<col width="17%" />
+<col width="14%" />
+<col width="15%" />
+<col width="6%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Ano óbito</th>
+<th align="center">Causas externas</th>
+<th align="center">Int. não determ.</th>
+<th align="center">Causas externas (ajustadas)</th>
+<th align="center">Sinistros trânsito</th>
+<th align="center">% sinistros vs causas ext. ajust.</th>
+<th align="center">Alocação - Int. não determ.</th>
+<th align="center">Sinistros trânsito (ajustados)</th>
+<th align="center">% de aumento</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">2011</td>
+<td align="center">124.028</td>
+<td align="center">10.422</td>
+<td align="center">113.606</td>
+<td align="center">41.775</td>
+<td align="center">0,37</td>
+<td align="center">3.832</td>
+<td align="center">45.607</td>
+<td align="center">9,17</td>
+</tr>
+<tr class="even">
+<td align="center">2012</td>
+<td align="center">129.443</td>
+<td align="center">10.127</td>
+<td align="center">119.316</td>
+<td align="center">43.184</td>
+<td align="center">0,36</td>
+<td align="center">3.665</td>
+<td align="center">46.849</td>
+<td align="center">8,49</td>
+</tr>
+<tr class="odd">
+<td align="center">2013</td>
+<td align="center">128.069</td>
+<td align="center">9.875</td>
+<td align="center">118.194</td>
+<td align="center">40.858</td>
+<td align="center">0,35</td>
+<td align="center">3.414</td>
+<td align="center">44.272</td>
+<td align="center">8,36</td>
+</tr>
+<tr class="even">
+<td align="center">2014</td>
+<td align="center">132.063</td>
+<td align="center">9.535</td>
+<td align="center">122.528</td>
+<td align="center">42.256</td>
+<td align="center">0,34</td>
+<td align="center">3.288</td>
+<td align="center">45.544</td>
+<td align="center">7,78</td>
+</tr>
+<tr class="odd">
+<td align="center">2015</td>
+<td align="center">126.624</td>
+<td align="center">9.862</td>
+<td align="center">116.762</td>
+<td align="center">37.346</td>
+<td align="center">0,32</td>
+<td align="center">3.154</td>
+<td align="center">40.500</td>
+<td align="center">8,45</td>
+</tr>
+<tr class="even">
+<td align="center">2016</td>
+<td align="center">129.438</td>
+<td align="center">10.330</td>
+<td align="center">119.108</td>
+<td align="center">36.196</td>
+<td align="center">0,30</td>
+<td align="center">3.139</td>
+<td align="center">39.335</td>
+<td align="center">8,67</td>
+</tr>
+<tr class="odd">
+<td align="center">2017</td>
+<td align="center">131.217</td>
+<td align="center">9.866</td>
+<td align="center">121.351</td>
+<td align="center">34.346</td>
+<td align="center">0,28</td>
+<td align="center">2.792</td>
+<td align="center">37.138</td>
+<td align="center">8,13</td>
+</tr>
+<tr class="even">
+<td align="center">2018</td>
+<td align="center">123.312</td>
+<td align="center">12.371</td>
+<td align="center">110.941</td>
+<td align="center">31.580</td>
+<td align="center">0,28</td>
+<td align="center">3.521</td>
+<td align="center">35.101</td>
+<td align="center">11,15</td>
+</tr>
+<tr class="odd">
+<td align="center">2019</td>
+<td align="center">115.154</td>
+<td align="center">16.694</td>
+<td align="center">98.460</td>
+<td align="center">30.883</td>
+<td align="center">0,31</td>
+<td align="center">5.236</td>
+<td align="center">36.119</td>
+<td align="center">16,95</td>
+</tr>
+<tr class="even">
+<td align="center">2020</td>
+<td align="center">118.239</td>
+<td align="center">14.101</td>
+<td align="center">104.138</td>
+<td align="center">31.669</td>
+<td align="center">0,30</td>
+<td align="center">4.288</td>
+<td align="center">35.957</td>
+<td align="center">13,54</td>
+</tr>
+<tr class="odd">
+<td align="center">2021</td>
+<td align="center">119.257</td>
+<td align="center">13.903</td>
+<td align="center">105.354</td>
+<td align="center">33.010</td>
+<td align="center">0,31</td>
+<td align="center">4.356</td>
+<td align="center">37.366</td>
+<td align="center">13,20</td>
+</tr>
+<tr class="even">
+<td align="center">2022</td>
+<td align="center">120.903</td>
+<td align="center">15.579</td>
+<td align="center">105.324</td>
+<td align="center">33.030</td>
+<td align="center">0,31</td>
+<td align="center">4.886</td>
+<td align="center">37.916</td>
+<td align="center">14,79</td>
+</tr>
+<tr class="odd">
+<td align="center">2023</td>
+<td align="center">120.683</td>
+<td align="center">17.585</td>
+<td align="center">103.098</td>
+<td align="center">32.922</td>
+<td align="center">0,32</td>
+<td align="center">5.615</td>
+<td align="center">38.537</td>
+<td align="center">17,06</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p>O problema de fazer essa alocação geral a partir de todos códigos de
+intenção não determinada (Y10-Y34, Y87.2) é que números relativos a
+envenenamento, afogamento e armas de fogo, dentre outros, entram na
+conta. Se não fazer a redistribuição pode gerar um número
+subdimensionado, fazê-la desta forma pode superdimensioná-los. <span class="citation">Bhalla <em>et al.</em> (<a href="#ref-bhalla2023">2023</a>)</span> e <span class="citation">Bhalla;
+Harrison (<a href="#ref-bhalla2015">2015</a>)</span>, por exemplo,
+dividem seus códigos entre as CID-10 de sinistros de trânsito e fora de
+trânsito.</p>
+<p>Uma possibilidade seria fazer uma distribuição proporcional dos
+códigos Y34 - Evento não especificado, intenção indeterminada
+[<em>Unspecified event, undetermined intent</em>] e Y87.2 - “Sequelas de
+eventos de intenção indeterminada” [<em>Sequelae of events of
+undetermined intent</em>], considerando a seleção das CID-10 para
+sinistros de trânsito já utilizada, e somar os dados de Y32 - Acidente
+de veículo motorizado, intenção indeterminada [<em>Crashing of motor
+vehicle, undetermined intent</em>].</p>
+<p>Isso garantiria uma redistribuição proporcional dos registros
+indeterminados junto à soma de um código que está diretamente
+relacionado a sinistros de trânsito. Tais valores poderiam ser
+subdivididos proporcionalmente nas duas categorias presentes no
+documento da <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span>, “ferimentos não intencionais” e
+“ferimentos intencionais”. Para este <strong>Texto para
+discussão</strong>, esta nova subdivisão não será feita, assumindo, na
+prática, que todos os números realocados referir-se-ão a “ferimentos não
+intencionais”.</p>
+<p>O código em R para o passo-a-passo descrito acima e seus resultados
+são apresentados a seguir.</p>
+<p><br></p>
+<pre class="r"><code># ------------------------------------------------------------------------------
+# Redistribuição dos códigos de eventos e sequelas - intenção indeterminada (2)
+# ------------------------------------------------------------------------------
+
+# Isolar somente códigos Y34, Y87.2 - unspecified event, sequelae of events of
+# undetermined intent
+f_expr &lt;- expr(str_starts(CAUSABAS, &#39;Y34&#39;) | str_starts(CAUSABAS, &#39;Y872&#39;))
+y34_y872 &lt;- agrupar(sim_sus, f_expr, n_col = &#39;y34_y872&#39;)
+
+# Isolar somente código Y32 - Crashing of motor vehicle
+f_expr &lt;- expr(str_starts(CAUSABAS, &#39;Y32&#39;))
+y32 &lt;- agrupar(sim_sus, f_expr, n_col = &#39;y32&#39;)
+
+# Calcular segundo ajuste de road injuries, realocando proporcionalmente Y34 e 
+# Y87.2 e somando diretamente Y32
+road_injuries_adj2 &lt;- 
+  external_causes_new %&gt;%
+  # Fazer cálculos proporcionais para ajustar road injuries
+  left_join(road_injuries, by = &#39;ANOOBITO&#39;) %&gt;%
+  # Qual a proporção das road injuries frente ao total de external causes?
+  mutate(prop_road_inj = road_injuries / external_causes_new) %&gt;% 
+  # Juntar Y34, Y87.2 e fazer alocação proporcional somente para esses dois códigos
+  left_join(y34_y872, by = &#39;ANOOBITO&#39;) %&gt;%
+  mutate(y34_y872_aloc = round(y34_y872 * prop_road_inj)) %&gt;% 
+  # Juntar código Y32
+  left_join(y32, by = &#39;ANOOBITO&#39;) %&gt;%
+  select(ANOOBITO, road_injuries, prop_road_inj, y34_y872, y34_y872_aloc, y32) %&gt;% 
+  # Somar colunas de road_injuries, y34_y872_aloc e y32
+  mutate(new_road_inj2 = road_injuries + y34_y872_aloc + y32,
+         # Calcular percentual de acréscimo frente aos valores anteriores de road injury
+         road_inj_incr2 = (new_road_inj2 - road_injuries) / road_injuries * 100) </code></pre>
+<p><br><a name="tabela3"></a></p>
+<p>Tabela 3. Sinistros de trânsito ajustados com redistribuição dos
+códigos de intenção indeterminada Y34 e Y87.2 e soma do código Y32, a
+partir de <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span>. Colunas de causas externas,
+intenções não determinadas e causas externas ajustadas estão ocultas por
+serem as mesmas da <a href="#tabela2">Tabela 2</a>.</p>
+<pre class="r"><code>road_injuries_adjusted2</code></pre>
+<table>
+<colgroup>
+<col width="6%" />
+<col width="12%" />
+<col width="21%" />
+<col width="10%" />
+<col width="13%" />
+<col width="6%" />
+<col width="21%" />
+<col width="8%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Ano óbito</th>
+<th align="center">Sinistros trânsito</th>
+<th align="center">% sinistros vs causas ext. ajust.</th>
+<th align="center">Códs. Y34-Y87.2</th>
+<th align="center">Alocação - Y34-Y87.2</th>
+<th align="center">Cód. Y32</th>
+<th align="center">Sinistros trânsito (ajustados) (2)</th>
+<th align="center">% de aumento</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">2011</td>
+<td align="center">41.775</td>
+<td align="center">0,37</td>
+<td align="center">5.638</td>
+<td align="center">2.073</td>
+<td align="center">30</td>
+<td align="center">43.878</td>
+<td align="center">5,03</td>
+</tr>
+<tr class="even">
+<td align="center">2012</td>
+<td align="center">43.184</td>
+<td align="center">0,36</td>
+<td align="center">5.043</td>
+<td align="center">1.825</td>
+<td align="center">18</td>
+<td align="center">45.027</td>
+<td align="center">4,27</td>
+</tr>
+<tr class="odd">
+<td align="center">2013</td>
+<td align="center">40.858</td>
+<td align="center">0,35</td>
+<td align="center">5.352</td>
+<td align="center">1.850</td>
+<td align="center">19</td>
+<td align="center">42.727</td>
+<td align="center">4,57</td>
+</tr>
+<tr class="even">
+<td align="center">2014</td>
+<td align="center">42.256</td>
+<td align="center">0,34</td>
+<td align="center">4.894</td>
+<td align="center">1.688</td>
+<td align="center">18</td>
+<td align="center">43.962</td>
+<td align="center">4,04</td>
+</tr>
+<tr class="odd">
+<td align="center">2015</td>
+<td align="center">37.346</td>
+<td align="center">0,32</td>
+<td align="center">5.316</td>
+<td align="center">1.700</td>
+<td align="center">14</td>
+<td align="center">39.060</td>
+<td align="center">4,59</td>
+</tr>
+<tr class="even">
+<td align="center">2016</td>
+<td align="center">36.196</td>
+<td align="center">0,30</td>
+<td align="center">5.830</td>
+<td align="center">1.772</td>
+<td align="center">13</td>
+<td align="center">37.981</td>
+<td align="center">4,93</td>
+</tr>
+<tr class="odd">
+<td align="center">2017</td>
+<td align="center">34.346</td>
+<td align="center">0,28</td>
+<td align="center">5.627</td>
+<td align="center">1.593</td>
+<td align="center">10</td>
+<td align="center">35.949</td>
+<td align="center">4,67</td>
+</tr>
+<tr class="even">
+<td align="center">2018</td>
+<td align="center">31.580</td>
+<td align="center">0,28</td>
+<td align="center">6.385</td>
+<td align="center">1.818</td>
+<td align="center">13</td>
+<td align="center">33.411</td>
+<td align="center">5,80</td>
+</tr>
+<tr class="odd">
+<td align="center">2019</td>
+<td align="center">30.883</td>
+<td align="center">0,31</td>
+<td align="center">9.662</td>
+<td align="center">3.031</td>
+<td align="center">19</td>
+<td align="center">33.933</td>
+<td align="center">9,88</td>
+</tr>
+<tr class="even">
+<td align="center">2020</td>
+<td align="center">31.669</td>
+<td align="center">0,30</td>
+<td align="center">7.732</td>
+<td align="center">2.351</td>
+<td align="center">15</td>
+<td align="center">34.035</td>
+<td align="center">7,47</td>
+</tr>
+<tr class="odd">
+<td align="center">2021</td>
+<td align="center">33.010</td>
+<td align="center">0,31</td>
+<td align="center">7.689</td>
+<td align="center">2.409</td>
+<td align="center">29</td>
+<td align="center">35.448</td>
+<td align="center">7,39</td>
+</tr>
+<tr class="even">
+<td align="center">2022</td>
+<td align="center">33.030</td>
+<td align="center">0,31</td>
+<td align="center">8.967</td>
+<td align="center">2.812</td>
+<td align="center">35</td>
+<td align="center">35.877</td>
+<td align="center">8,62</td>
+</tr>
+<tr class="odd">
+<td align="center">2023</td>
+<td align="center">32.922</td>
+<td align="center">0,32</td>
+<td align="center">10.144</td>
+<td align="center">3.239</td>
+<td align="center">44</td>
+<td align="center">36.205</td>
+<td align="center">9,97</td>
+</tr>
+</tbody>
+</table>
+<p><br><a name="resultados"></a></p>
 </div>
-<div id="referências" class="section level2 unnumbered">
-<h2 class="unnumbered">Referências</h2>
+<div id="resultados-e-discussão" class="section level2">
+<h2>Resultados e discussão</h2>
+<p><br></p>
+<p>A Tabela 4, a seguir, resume os resultados para as três estimativas.
+A primeira coluna, “Sinistros de trânsito” apresenta a extração dos
+números sem redistribuição de códigos. A coluna , “Sinistros trânsito
+(ajustados) (1)” traz os números com a distribuição geral de códigos
+conforme <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span>. Finalmente, a coluna “Sinistros
+trânsito (ajustados) (2)” apresenta as estimativas a partir da
+distribuição proporcional de códigos específicos, a partir de uma
+segunda interpretação de <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span>.</p>
+<p><br><a name="tabela4"></a></p>
+<p>Tabela 4. Resultados para as estimativas de sinistros de trânsito
+entre 2011 e 2023.</p>
+<pre class="r"><code>road_injuries_final</code></pre>
+<table style="width:100%;">
+<colgroup>
+<col width="7%" />
+<col width="14%" />
+<col width="25%" />
+<col width="12%" />
+<col width="25%" />
+<col width="12%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Ano óbito</th>
+<th align="center">Sinistros trânsito</th>
+<th align="center">Sinistros trânsito (ajustados) (1)</th>
+<th align="center">% de aumento (1)</th>
+<th align="center">Sinistros trânsito (ajustados) (2)</th>
+<th align="center">% de aumento (2)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">2011</td>
+<td align="center">41.775</td>
+<td align="center">45.607</td>
+<td align="center">9,17</td>
+<td align="center">43.878</td>
+<td align="center">5,03</td>
+</tr>
+<tr class="even">
+<td align="center">2012</td>
+<td align="center">43.184</td>
+<td align="center">46.849</td>
+<td align="center">8,49</td>
+<td align="center">45.027</td>
+<td align="center">4,27</td>
+</tr>
+<tr class="odd">
+<td align="center">2013</td>
+<td align="center">40.858</td>
+<td align="center">44.272</td>
+<td align="center">8,36</td>
+<td align="center">42.727</td>
+<td align="center">4,57</td>
+</tr>
+<tr class="even">
+<td align="center">2014</td>
+<td align="center">42.256</td>
+<td align="center">45.544</td>
+<td align="center">7,78</td>
+<td align="center">43.962</td>
+<td align="center">4,04</td>
+</tr>
+<tr class="odd">
+<td align="center">2015</td>
+<td align="center">37.346</td>
+<td align="center">40.500</td>
+<td align="center">8,45</td>
+<td align="center">39.060</td>
+<td align="center">4,59</td>
+</tr>
+<tr class="even">
+<td align="center">2016</td>
+<td align="center">36.196</td>
+<td align="center">39.335</td>
+<td align="center">8,67</td>
+<td align="center">37.981</td>
+<td align="center">4,93</td>
+</tr>
+<tr class="odd">
+<td align="center">2017</td>
+<td align="center">34.346</td>
+<td align="center">37.138</td>
+<td align="center">8,13</td>
+<td align="center">35.949</td>
+<td align="center">4,67</td>
+</tr>
+<tr class="even">
+<td align="center">2018</td>
+<td align="center">31.580</td>
+<td align="center">35.101</td>
+<td align="center">11,15</td>
+<td align="center">33.411</td>
+<td align="center">5,80</td>
+</tr>
+<tr class="odd">
+<td align="center">2019</td>
+<td align="center">30.883</td>
+<td align="center">36.119</td>
+<td align="center">16,95</td>
+<td align="center">33.933</td>
+<td align="center">9,88</td>
+</tr>
+<tr class="even">
+<td align="center">2020</td>
+<td align="center">31.669</td>
+<td align="center">35.957</td>
+<td align="center">13,54</td>
+<td align="center">34.035</td>
+<td align="center">7,47</td>
+</tr>
+<tr class="odd">
+<td align="center">2021</td>
+<td align="center">33.010</td>
+<td align="center">37.366</td>
+<td align="center">13,20</td>
+<td align="center">35.448</td>
+<td align="center">7,39</td>
+</tr>
+<tr class="even">
+<td align="center">2022</td>
+<td align="center">33.030</td>
+<td align="center">37.916</td>
+<td align="center">14,79</td>
+<td align="center">35.877</td>
+<td align="center">8,62</td>
+</tr>
+<tr class="odd">
+<td align="center">2023</td>
+<td align="center">32.922</td>
+<td align="center">38.537</td>
+<td align="center">17,06</td>
+<td align="center">36.205</td>
+<td align="center">9,97</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+</div>
+<div id="referências" class="section level2">
+<h2>Referências</h2>
+<p><br></p>
 <div id="refs" class="references csl-bib-body" entry-spacing="1">
+<div id="ref-aquino2020" class="csl-entry">
+AQUINO, Érika Carvalho De; ANTUNES, José Leopoldo Ferreira; MORAIS NETO,
+Otaliba Libânio De. Mortalidade por acidentes de trânsito no Brasil
+(2000<span></span>2016): capitais versus não capitais. <strong>Revista
+de Saúde Pública</strong>, [<em>s. l.</em>], v. 54, p. 122, 2020.
+Disponível em: <a href="https://www.revistas.usp.br/rsp/article/view/179987">https://www.revistas.usp.br/rsp/article/view/179987.
+</a>
+</div>
 <div id="ref-bhalla2023" class="csl-entry">
 BHALLA, Kavi <em>et al.</em> Assessing discrepancies in estimates of
 road traffic deaths in Brazil. <strong>Injury Prevention</strong>,
@@ -784,6 +1434,28 @@ BRASIL, Ministério da Saúde. <strong>Sistema de Informação sobre
 Mortalidade do Sistema Único de Saúde - SIM DATASUS</strong>., 2024.
 Disponível em: <a href="https://datasus.saude.gov.br/transferencia-de-arquivos/#">https://datasus.saude.gov.br/transferencia-de-arquivos/#.
 </a>
+</div>
+<div id="ref-carvalho2020" class="csl-entry">
+CARVALHO, Carlos Henrique Ribeiro De. <strong>Texto para Discussão 2565
+- Custos dos Acidentes de Trânsito no Brasil: Estimativa simplificada
+com base na Atualização das Pesquisas do IPEA sobre Custos de Acidentes
+nos Aglomerados Urbanos e Rodovias</strong>. Brasília, DF: [<em>s.
+n.</em>], 2020. Disponível em: <a href="https://www.ipea.gov.br/atlasviolencia/arquivos/artigos/7018-td2565.pdf">https://www.ipea.gov.br/atlasviolencia/arquivos/artigos/7018-td2565.pdf.
+</a>.
+</div>
+<div id="ref-carvalho2023" class="csl-entry">
+CARVALHO, Carlos Henrique Ribeiro De; GUEDES, Erivelton Pires.
+<strong>Nota Técnica n. 42 (Dirur) : Balanço da primeira década de ação
+pela segurança no trânsito no Brasil e perspectivas para a segunda
+década</strong>. Brasília, DF: [<em>s. n.</em>], 2023. Disponível em: <a href="https://repositorio.ipea.gov.br/bitstream/11058/12250/4/NT_42_Dirur_Balanco.pdf">https://repositorio.ipea.gov.br/bitstream/11058/12250/4/NT_42_Dirur_Balanco.pdf.
+</a>.
+</div>
+<div id="ref-ferreira2020" class="csl-entry">
+FERREIRA, Paulo César Pêgas. <strong>Nota Técnica n. 75 (DISET) -
+Impactos Socioeconômicos dos Acidentes de Transporte no Brasil no
+Período de 2007 a 2018</strong>. Brasília, DF: [<em>s. n.</em>], 2020.
+Disponível em: <a href="https://www.ipea.gov.br/portal/images/stories/PDFs/nota_tecnica/200911_impactos_socioeconomico.PDF">https://www.ipea.gov.br/portal/images/stories/PDFs/nota_tecnica/200911_impactos_socioeconomico.PDF.
+</a>.
 </div>
 <div id="ref-rcoreteam2024" class="csl-entry">
 R CORE TEAM. <strong>R: A Language and Environment for Statistical
