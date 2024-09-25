@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2024-09-24" />
+<meta name="date" content="2024-09-25" />
 
 <title>Texto para Discussão - Padronização da extração de dados do SIM-SUS para mortes no trânsito</title>
 
@@ -374,7 +374,7 @@ display: none;
 
 <h1 class="title toc-ignore">Texto para Discussão - Padronização da
 extração de dados do SIM-SUS para mortes no trânsito</h1>
-<h4 class="date">2024-09-24</h4>
+<h4 class="date">2024-09-25</h4>
 
 </div>
 
@@ -501,7 +501,7 @@ de dados da OMS para as causas de morte a nível nacional 2000-2019]
 <span class="citation">(<a href="#ref-who2020">WHO, 2020</a>)</span>.
 Para países em que a CID-10 possui quatro caracteres, como é o caso do
 Brasil, os códigos a serem filtrados são os seguintes:</p>
-<pre><code>ICD-10 codes: V01-V04, V06 (.1-.9), V09 (.2-.3), V10- V14 (.3-.9), V15-V19 (.4-.9), V20-V28 (.3-.9), V29- V79 (.4-.9), V80 (.3-.5), V81.1, V82 (.1, .8-.9), V83-V86 (.0-.3), V87 (.0-.9), V89 (.2-.3, .9), V99, Y85.0</code></pre>
+<pre><code>V01-V04 (.1-.9), V06 (.1-.9), V09 (.2-.3), V10- V14 (.3-.9), V15-V19 (.4-.9), V20-V28 (.3-.9), V29- V79 (.4-.9), V80 (.3-.5), V81.1, V82 (.1, .8-.9), V83-V86 (.0-.3), V87 (.0-.9), V89 (.2-.3, .9), V99, Y85.0</code></pre>
 <p><br></p>
 <p>O script em R para executar este filtro e agrupar os resultados por
 ano é apresentado a seguir.</p>
@@ -528,7 +528,7 @@ agrupar &lt;- function(df, filter_expr, group_var = expr(ANOOBITO), n_col = &#39
 
 # WHO methods and data sources for country-level causes of death 2000-2019
 # https://www.who.int/docs/default-source/gho-documents/global-health-estimates/ghe2019_cod_methods.pdf
-# V01-V04, V06 (.1-.9), V09 (.2-.3), V10- V14 (.3-.9), V15-V19 (.4-.9),
+# V01-V04 (.1-.9), V06 (.1-.9), V09 (.2-.3), V10- V14 (.3-.9), V15-V19 (.4-.9),
 # V20-V28 (.3-.9), V29- V79 (.4-.9), V80 (.3-.5), V81.1, V82 (.1, .8-.9),
 # V83-V86 (.0-.3), V87 (.0-.9), V89 (.2-.3, .9), V99, Y85.0
 
@@ -541,7 +541,7 @@ f_expr &lt;- expr(
     str_starts(CAUSABAS, &#39;V80[3-5]&#39;) | str_starts(CAUSABAS, &#39;V8[12]1&#39;) |
     str_starts(CAUSABAS, &#39;V82[8-9]&#39;) | str_starts(CAUSABAS, &#39;V8[3-6][0-3]&#39;) |
     str_starts(CAUSABAS, &#39;V87[0-9]&#39;) | str_starts(CAUSABAS, &#39;V89[239]&#39;) |
-    str_starts(CAUSABAS, &#39;V99&#39;) | str_starts(CAUSABAS, &#39;Y85&#39;)
+    str_starts(CAUSABAS, &#39;V99&#39;) | str_starts(CAUSABAS, &#39;Y850&#39;)
 )
 road_injuries &lt;- agrupar(sim_sus, f_expr, n_col = &#39;road_injuries&#39;)</code></pre>
 <p><br><a name="tabela1"></a></p>
@@ -558,55 +558,55 @@ redistribuição dos códigos de intenção indeterminada.</p>
 <tbody>
 <tr class="odd">
 <td align="center">2011</td>
-<td align="center">41.775</td>
+<td align="center">41.756</td>
 </tr>
 <tr class="even">
 <td align="center">2012</td>
-<td align="center">43.184</td>
+<td align="center">43.152</td>
 </tr>
 <tr class="odd">
 <td align="center">2013</td>
-<td align="center">40.858</td>
+<td align="center">40.826</td>
 </tr>
 <tr class="even">
 <td align="center">2014</td>
-<td align="center">42.256</td>
+<td align="center">42.221</td>
 </tr>
 <tr class="odd">
 <td align="center">2015</td>
-<td align="center">37.346</td>
+<td align="center">37.321</td>
 </tr>
 <tr class="even">
 <td align="center">2016</td>
-<td align="center">36.196</td>
+<td align="center">36.165</td>
 </tr>
 <tr class="odd">
 <td align="center">2017</td>
-<td align="center">34.346</td>
+<td align="center">34.310</td>
 </tr>
 <tr class="even">
 <td align="center">2018</td>
-<td align="center">31.580</td>
+<td align="center">31.549</td>
 </tr>
 <tr class="odd">
 <td align="center">2019</td>
-<td align="center">30.883</td>
+<td align="center">30.836</td>
 </tr>
 <tr class="even">
 <td align="center">2020</td>
-<td align="center">31.669</td>
+<td align="center">31.644</td>
 </tr>
 <tr class="odd">
 <td align="center">2021</td>
-<td align="center">33.010</td>
+<td align="center">32.981</td>
 </tr>
 <tr class="even">
 <td align="center">2022</td>
-<td align="center">33.030</td>
+<td align="center">32.989</td>
 </tr>
 <tr class="odd">
 <td align="center">2023</td>
-<td align="center">32.922</td>
+<td align="center">32.883</td>
 </tr>
 </tbody>
 </table>
@@ -615,6 +615,14 @@ CID-10, o números são os mesmos contidos na plataforma <strong>WHO
 Mortality Database - Road Traffic Accidents</strong> [Base de
 Mortalidade da OMS - Sinistros de Trânsito] <span class="citation">(<a href="#ref-who2022">WHO, 2022</a>)</span>, que possui dados para o
 Brasil até o ano de 2020.</p>
+<p>É importante mencionar que a listagem de códigos presentes no rodapé
+e na seção “<a href="https://platform.who.int/mortality/about/list-of-causes-and-corresponding-icd-10-codes" target="_blank">About</a>” [Sobre] da base de dados WHO Mortality
+Database possui uma ligeira diferença com relação à em <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span>.
+Especificamente, a redação da seleção começa com
+“<strong>V01-V04</strong>, V06 (.1-.9)…”, em vez de “<strong>V01-V04
+(.1-.9)</strong>, V06 (.1-.9)…”, como descrito em <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span>. Trata-se,
+provavelmente, de um erro de redação, uma vez os números são iguais à
+filtragem de V01-V04 (.1-.9) e não somente de V01-V04.</p>
 <p><br><a name="discussao_cid10"></a></p>
 </div>
 <div id="discussão-sobre-a-redistribuição-dos-dados-de-categorias-genéricas" class="section level2">
@@ -632,9 +640,9 @@ CID-10 genéricas devem ser redisribuídas proporcionalmente para as mais
 específicas é apresentado a seguir.</p>
 <table style="width:100%;">
 <colgroup>
-<col width="6%" />
-<col width="75%" />
-<col width="18%" />
+<col width="5%" />
+<col width="76%" />
+<col width="17%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -658,21 +666,33 @@ infância, Capítulo 2)</p>
 </tr>
 <tr class="odd">
 <td align="left"><span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span></td>
-<td align="left">V01-V04, V06 (.1-.9), V09 (.2-.3), V10-V14 (.3-.9),
-V15-V19 (.4-.9), V20-V28 (.3-.9), V29-V79 (.4-.9), V80 (.3-.5), V81.1,
-V82 (.1, .8-.9), V83-V86 (.0-.3), V87 (.0-.9), V89 (.2-.3, .9), V99,
-Y85.0</td>
+<td align="left"><strong>V01-V04 (.1-.9)</strong>, V06 (.1-.9), V09
+(.2-.3), V10-V14 (.3-.9), V15-V19 (.4-.9), V20-V28 (.3-.9), V29-V79
+(.4-.9), V80 (.3-.5), V81.1, V82 (.1, .8-.9), V83-V86 (.0-.3), V87
+(.0-.9), V89 (.2-.3, .9), V99, Y85.0</td>
 <td align="left"><p>Y10-Y34, Y87.2</p>
 <p>(Obs. Redistribuição não presente em <span class="citation">WHO (<a href="#ref-who2022">2022</a>)</span>)</p></td>
 </tr>
 <tr class="even">
+<td align="left"><span class="citation">WHO (<a href="#ref-who2022">2022</a>)</span></td>
+<td align="left"><p><strong>V01-V04</strong>, V06 (.1-.9), V09 (.2-.3),
+V10-V14 (.3-.9), V15-V19 (.4-.9), V20-V28 (.3-.9), V29-V79 (.4-.9), V80
+(.3-.5), V81.1, V82 (.1, .8-.9), V83-V86 (.0-.3), V87 (.0-.9), V89
+(.2-.3, .9), V99, Y85.0</p>
+<p>(Obs. A redação “V01-V04, V06 (.1-.9)…” em <span class="citation">WHO
+(<a href="#ref-who2022">2022</a>)</span> provavelmente deveria ser igual
+à de <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span>, incluindo o filtro (.1-.9) para
+V01-V04. Provavelmente, é um erro de digitação)</p></td>
+<td align="left">Sem redistribuição</td>
+</tr>
+<tr class="odd">
 <td align="left"><span class="citation">Bhalla <em>et al.</em> (<a href="#ref-bhalla2023">2023</a>)</span></td>
 <td align="left">V01-V04, V06, V09, V10-V79, V80, V82-V85, V87-V89,
 Y85.0</td>
 <td align="left"><p>V99, X59, Y34, Y85.9, Y87.2, Y89.9</p>
 <p>(Obs. Não considera <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span>)</p></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><span class="citation">Carvalho; Guedes (<a href="#ref-carvalho2023">2023</a>)</span></td>
 <td align="left"><p>V01 a V89</p>
 <p>(Obs. Outras publicações do IPEA como <span class="citation">Carvalho
@@ -890,10 +910,10 @@ códigos de intenção indeterminada Y10-Y34, Y87.2, conforme <span class="citat
 <td align="center">124.028</td>
 <td align="center">10.422</td>
 <td align="center">113.606</td>
-<td align="center">41.775</td>
+<td align="center">41.756</td>
 <td align="center">0,37</td>
-<td align="center">3.832</td>
-<td align="center">45.607</td>
+<td align="center">3.831</td>
+<td align="center">45.587</td>
 <td align="center">9,17</td>
 </tr>
 <tr class="even">
@@ -901,10 +921,10 @@ códigos de intenção indeterminada Y10-Y34, Y87.2, conforme <span class="citat
 <td align="center">129.443</td>
 <td align="center">10.127</td>
 <td align="center">119.316</td>
-<td align="center">43.184</td>
+<td align="center">43.152</td>
 <td align="center">0,36</td>
-<td align="center">3.665</td>
-<td align="center">46.849</td>
+<td align="center">3.663</td>
+<td align="center">46.815</td>
 <td align="center">8,49</td>
 </tr>
 <tr class="odd">
@@ -912,21 +932,21 @@ códigos de intenção indeterminada Y10-Y34, Y87.2, conforme <span class="citat
 <td align="center">128.069</td>
 <td align="center">9.875</td>
 <td align="center">118.194</td>
-<td align="center">40.858</td>
+<td align="center">40.826</td>
 <td align="center">0,35</td>
-<td align="center">3.414</td>
-<td align="center">44.272</td>
-<td align="center">8,36</td>
+<td align="center">3.411</td>
+<td align="center">44.237</td>
+<td align="center">8,35</td>
 </tr>
 <tr class="even">
 <td align="center">2014</td>
 <td align="center">132.063</td>
 <td align="center">9.535</td>
 <td align="center">122.528</td>
-<td align="center">42.256</td>
+<td align="center">42.221</td>
 <td align="center">0,34</td>
-<td align="center">3.288</td>
-<td align="center">45.544</td>
+<td align="center">3.286</td>
+<td align="center">45.507</td>
 <td align="center">7,78</td>
 </tr>
 <tr class="odd">
@@ -934,10 +954,10 @@ códigos de intenção indeterminada Y10-Y34, Y87.2, conforme <span class="citat
 <td align="center">126.624</td>
 <td align="center">9.862</td>
 <td align="center">116.762</td>
-<td align="center">37.346</td>
+<td align="center">37.321</td>
 <td align="center">0,32</td>
-<td align="center">3.154</td>
-<td align="center">40.500</td>
+<td align="center">3.152</td>
+<td align="center">40.473</td>
 <td align="center">8,45</td>
 </tr>
 <tr class="even">
@@ -945,10 +965,10 @@ códigos de intenção indeterminada Y10-Y34, Y87.2, conforme <span class="citat
 <td align="center">129.438</td>
 <td align="center">10.330</td>
 <td align="center">119.108</td>
-<td align="center">36.196</td>
+<td align="center">36.165</td>
 <td align="center">0,30</td>
-<td align="center">3.139</td>
-<td align="center">39.335</td>
+<td align="center">3.137</td>
+<td align="center">39.302</td>
 <td align="center">8,67</td>
 </tr>
 <tr class="odd">
@@ -956,10 +976,10 @@ códigos de intenção indeterminada Y10-Y34, Y87.2, conforme <span class="citat
 <td align="center">131.217</td>
 <td align="center">9.866</td>
 <td align="center">121.351</td>
-<td align="center">34.346</td>
+<td align="center">34.310</td>
 <td align="center">0,28</td>
-<td align="center">2.792</td>
-<td align="center">37.138</td>
+<td align="center">2.789</td>
+<td align="center">37.099</td>
 <td align="center">8,13</td>
 </tr>
 <tr class="even">
@@ -967,10 +987,10 @@ códigos de intenção indeterminada Y10-Y34, Y87.2, conforme <span class="citat
 <td align="center">123.312</td>
 <td align="center">12.371</td>
 <td align="center">110.941</td>
-<td align="center">31.580</td>
+<td align="center">31.549</td>
 <td align="center">0,28</td>
-<td align="center">3.521</td>
-<td align="center">35.101</td>
+<td align="center">3.518</td>
+<td align="center">35.067</td>
 <td align="center">11,15</td>
 </tr>
 <tr class="odd">
@@ -978,10 +998,10 @@ códigos de intenção indeterminada Y10-Y34, Y87.2, conforme <span class="citat
 <td align="center">115.154</td>
 <td align="center">16.694</td>
 <td align="center">98.460</td>
-<td align="center">30.883</td>
+<td align="center">30.836</td>
 <td align="center">0,31</td>
-<td align="center">5.236</td>
-<td align="center">36.119</td>
+<td align="center">5.228</td>
+<td align="center">36.064</td>
 <td align="center">16,95</td>
 </tr>
 <tr class="even">
@@ -989,10 +1009,10 @@ códigos de intenção indeterminada Y10-Y34, Y87.2, conforme <span class="citat
 <td align="center">118.239</td>
 <td align="center">14.101</td>
 <td align="center">104.138</td>
-<td align="center">31.669</td>
+<td align="center">31.644</td>
 <td align="center">0,30</td>
-<td align="center">4.288</td>
-<td align="center">35.957</td>
+<td align="center">4.285</td>
+<td align="center">35.929</td>
 <td align="center">13,54</td>
 </tr>
 <tr class="odd">
@@ -1000,10 +1020,10 @@ códigos de intenção indeterminada Y10-Y34, Y87.2, conforme <span class="citat
 <td align="center">119.257</td>
 <td align="center">13.903</td>
 <td align="center">105.354</td>
-<td align="center">33.010</td>
+<td align="center">32.981</td>
 <td align="center">0,31</td>
-<td align="center">4.356</td>
-<td align="center">37.366</td>
+<td align="center">4.352</td>
+<td align="center">37.333</td>
 <td align="center">13,20</td>
 </tr>
 <tr class="even">
@@ -1011,10 +1031,10 @@ códigos de intenção indeterminada Y10-Y34, Y87.2, conforme <span class="citat
 <td align="center">120.903</td>
 <td align="center">15.579</td>
 <td align="center">105.324</td>
-<td align="center">33.030</td>
+<td align="center">32.989</td>
 <td align="center">0,31</td>
-<td align="center">4.886</td>
-<td align="center">37.916</td>
+<td align="center">4.880</td>
+<td align="center">37.869</td>
 <td align="center">14,79</td>
 </tr>
 <tr class="odd">
@@ -1022,10 +1042,10 @@ códigos de intenção indeterminada Y10-Y34, Y87.2, conforme <span class="citat
 <td align="center">120.683</td>
 <td align="center">17.585</td>
 <td align="center">103.098</td>
-<td align="center">32.922</td>
+<td align="center">32.883</td>
 <td align="center">0,32</td>
-<td align="center">5.615</td>
-<td align="center">38.537</td>
+<td align="center">5.609</td>
+<td align="center">38.492</td>
 <td align="center">17,06</td>
 </tr>
 </tbody>
@@ -1123,132 +1143,132 @@ serem as mesmas da <a href="#tabela2">Tabela 2</a>.</p>
 <tbody>
 <tr class="odd">
 <td align="center">2011</td>
-<td align="center">41.775</td>
+<td align="center">41.756</td>
 <td align="center">0,37</td>
 <td align="center">5.638</td>
-<td align="center">2.073</td>
+<td align="center">2.072</td>
 <td align="center">30</td>
-<td align="center">43.878</td>
+<td align="center">43.858</td>
 <td align="center">5,03</td>
 </tr>
 <tr class="even">
 <td align="center">2012</td>
-<td align="center">43.184</td>
+<td align="center">43.152</td>
 <td align="center">0,36</td>
 <td align="center">5.043</td>
-<td align="center">1.825</td>
+<td align="center">1.824</td>
 <td align="center">18</td>
-<td align="center">45.027</td>
+<td align="center">44.994</td>
 <td align="center">4,27</td>
 </tr>
 <tr class="odd">
 <td align="center">2013</td>
-<td align="center">40.858</td>
+<td align="center">40.826</td>
 <td align="center">0,35</td>
 <td align="center">5.352</td>
-<td align="center">1.850</td>
+<td align="center">1.849</td>
 <td align="center">19</td>
-<td align="center">42.727</td>
-<td align="center">4,57</td>
+<td align="center">42.694</td>
+<td align="center">4,58</td>
 </tr>
 <tr class="even">
 <td align="center">2014</td>
-<td align="center">42.256</td>
+<td align="center">42.221</td>
 <td align="center">0,34</td>
 <td align="center">4.894</td>
-<td align="center">1.688</td>
+<td align="center">1.686</td>
 <td align="center">18</td>
-<td align="center">43.962</td>
+<td align="center">43.925</td>
 <td align="center">4,04</td>
 </tr>
 <tr class="odd">
 <td align="center">2015</td>
-<td align="center">37.346</td>
+<td align="center">37.321</td>
 <td align="center">0,32</td>
 <td align="center">5.316</td>
-<td align="center">1.700</td>
+<td align="center">1.699</td>
 <td align="center">14</td>
-<td align="center">39.060</td>
+<td align="center">39.034</td>
 <td align="center">4,59</td>
 </tr>
 <tr class="even">
 <td align="center">2016</td>
-<td align="center">36.196</td>
+<td align="center">36.165</td>
 <td align="center">0,30</td>
 <td align="center">5.830</td>
-<td align="center">1.772</td>
+<td align="center">1.770</td>
 <td align="center">13</td>
-<td align="center">37.981</td>
+<td align="center">37.948</td>
 <td align="center">4,93</td>
 </tr>
 <tr class="odd">
 <td align="center">2017</td>
-<td align="center">34.346</td>
+<td align="center">34.310</td>
 <td align="center">0,28</td>
 <td align="center">5.627</td>
-<td align="center">1.593</td>
+<td align="center">1.591</td>
 <td align="center">10</td>
-<td align="center">35.949</td>
+<td align="center">35.911</td>
 <td align="center">4,67</td>
 </tr>
 <tr class="even">
 <td align="center">2018</td>
-<td align="center">31.580</td>
+<td align="center">31.549</td>
 <td align="center">0,28</td>
 <td align="center">6.385</td>
-<td align="center">1.818</td>
+<td align="center">1.816</td>
 <td align="center">13</td>
-<td align="center">33.411</td>
+<td align="center">33.378</td>
 <td align="center">5,80</td>
 </tr>
 <tr class="odd">
 <td align="center">2019</td>
-<td align="center">30.883</td>
+<td align="center">30.836</td>
 <td align="center">0,31</td>
 <td align="center">9.662</td>
-<td align="center">3.031</td>
+<td align="center">3.026</td>
 <td align="center">19</td>
-<td align="center">33.933</td>
-<td align="center">9,88</td>
+<td align="center">33.881</td>
+<td align="center">9,87</td>
 </tr>
 <tr class="even">
 <td align="center">2020</td>
-<td align="center">31.669</td>
+<td align="center">31.644</td>
 <td align="center">0,30</td>
 <td align="center">7.732</td>
-<td align="center">2.351</td>
+<td align="center">2.349</td>
 <td align="center">15</td>
-<td align="center">34.035</td>
+<td align="center">34.008</td>
 <td align="center">7,47</td>
 </tr>
 <tr class="odd">
 <td align="center">2021</td>
-<td align="center">33.010</td>
+<td align="center">32.981</td>
 <td align="center">0,31</td>
 <td align="center">7.689</td>
-<td align="center">2.409</td>
+<td align="center">2.407</td>
 <td align="center">29</td>
-<td align="center">35.448</td>
+<td align="center">35.417</td>
 <td align="center">7,39</td>
 </tr>
 <tr class="even">
 <td align="center">2022</td>
-<td align="center">33.030</td>
+<td align="center">32.989</td>
 <td align="center">0,31</td>
 <td align="center">8.967</td>
-<td align="center">2.812</td>
+<td align="center">2.809</td>
 <td align="center">35</td>
-<td align="center">35.877</td>
+<td align="center">35.833</td>
 <td align="center">8,62</td>
 </tr>
 <tr class="odd">
 <td align="center">2023</td>
-<td align="center">32.922</td>
+<td align="center">32.883</td>
 <td align="center">0,32</td>
 <td align="center">10.144</td>
-<td align="center">3.239</td>
+<td align="center">3.235</td>
 <td align="center">44</td>
-<td align="center">36.205</td>
+<td align="center">36.162</td>
 <td align="center">9,97</td>
 </tr>
 </tbody>
@@ -1292,106 +1312,106 @@ entre 2011 e 2023.</p>
 <tbody>
 <tr class="odd">
 <td align="center">2011</td>
-<td align="center">41.775</td>
-<td align="center">45.607</td>
+<td align="center">41.756</td>
+<td align="center">45.587</td>
 <td align="center">9,17</td>
-<td align="center">43.878</td>
+<td align="center">43.858</td>
 <td align="center">5,03</td>
 </tr>
 <tr class="even">
 <td align="center">2012</td>
-<td align="center">43.184</td>
-<td align="center">46.849</td>
+<td align="center">43.152</td>
+<td align="center">46.815</td>
 <td align="center">8,49</td>
-<td align="center">45.027</td>
+<td align="center">44.994</td>
 <td align="center">4,27</td>
 </tr>
 <tr class="odd">
 <td align="center">2013</td>
-<td align="center">40.858</td>
-<td align="center">44.272</td>
-<td align="center">8,36</td>
-<td align="center">42.727</td>
-<td align="center">4,57</td>
+<td align="center">40.826</td>
+<td align="center">44.237</td>
+<td align="center">8,35</td>
+<td align="center">42.694</td>
+<td align="center">4,58</td>
 </tr>
 <tr class="even">
 <td align="center">2014</td>
-<td align="center">42.256</td>
-<td align="center">45.544</td>
+<td align="center">42.221</td>
+<td align="center">45.507</td>
 <td align="center">7,78</td>
-<td align="center">43.962</td>
+<td align="center">43.925</td>
 <td align="center">4,04</td>
 </tr>
 <tr class="odd">
 <td align="center">2015</td>
-<td align="center">37.346</td>
-<td align="center">40.500</td>
+<td align="center">37.321</td>
+<td align="center">40.473</td>
 <td align="center">8,45</td>
-<td align="center">39.060</td>
+<td align="center">39.034</td>
 <td align="center">4,59</td>
 </tr>
 <tr class="even">
 <td align="center">2016</td>
-<td align="center">36.196</td>
-<td align="center">39.335</td>
+<td align="center">36.165</td>
+<td align="center">39.302</td>
 <td align="center">8,67</td>
-<td align="center">37.981</td>
+<td align="center">37.948</td>
 <td align="center">4,93</td>
 </tr>
 <tr class="odd">
 <td align="center">2017</td>
-<td align="center">34.346</td>
-<td align="center">37.138</td>
+<td align="center">34.310</td>
+<td align="center">37.099</td>
 <td align="center">8,13</td>
-<td align="center">35.949</td>
+<td align="center">35.911</td>
 <td align="center">4,67</td>
 </tr>
 <tr class="even">
 <td align="center">2018</td>
-<td align="center">31.580</td>
-<td align="center">35.101</td>
+<td align="center">31.549</td>
+<td align="center">35.067</td>
 <td align="center">11,15</td>
-<td align="center">33.411</td>
+<td align="center">33.378</td>
 <td align="center">5,80</td>
 </tr>
 <tr class="odd">
 <td align="center">2019</td>
-<td align="center">30.883</td>
-<td align="center">36.119</td>
+<td align="center">30.836</td>
+<td align="center">36.064</td>
 <td align="center">16,95</td>
-<td align="center">33.933</td>
-<td align="center">9,88</td>
+<td align="center">33.881</td>
+<td align="center">9,87</td>
 </tr>
 <tr class="even">
 <td align="center">2020</td>
-<td align="center">31.669</td>
-<td align="center">35.957</td>
+<td align="center">31.644</td>
+<td align="center">35.929</td>
 <td align="center">13,54</td>
-<td align="center">34.035</td>
+<td align="center">34.008</td>
 <td align="center">7,47</td>
 </tr>
 <tr class="odd">
 <td align="center">2021</td>
-<td align="center">33.010</td>
-<td align="center">37.366</td>
+<td align="center">32.981</td>
+<td align="center">37.333</td>
 <td align="center">13,20</td>
-<td align="center">35.448</td>
+<td align="center">35.417</td>
 <td align="center">7,39</td>
 </tr>
 <tr class="even">
 <td align="center">2022</td>
-<td align="center">33.030</td>
-<td align="center">37.916</td>
+<td align="center">32.989</td>
+<td align="center">37.869</td>
 <td align="center">14,79</td>
-<td align="center">35.877</td>
+<td align="center">35.833</td>
 <td align="center">8,62</td>
 </tr>
 <tr class="odd">
 <td align="center">2023</td>
-<td align="center">32.922</td>
-<td align="center">38.537</td>
+<td align="center">32.883</td>
+<td align="center">38.492</td>
 <td align="center">17,06</td>
-<td align="center">36.205</td>
+<td align="center">36.162</td>
 <td align="center">9,97</td>
 </tr>
 </tbody>
@@ -1401,13 +1421,13 @@ entre 2011 e 2023.</p>
 SIM-SUS é feita para estimar o número de mortes no trânsito no Brasil,
 alguns pontos precisam ser discutidos:</p>
 <ol style="list-style-type: decimal">
-<li>Quais os códigos CID-10 devem ser extraídos para compor a estimativa
-sobre sinistros de trânsito?</li>
-<li>Deve haver redistribuição dos números presentes em códigos CID-10
+<li><p>Quais os códigos CID-10 devem ser extraídos para compor a
+estimativa sobre sinistros de trânsito?</p></li>
+<li><p>Deve haver redistribuição dos números presentes em códigos CID-10
 mais genéricos, frequentemente citados na literatura como <em>garbage
 codes</em> [códigos lixo]? Se sim, é preciso haver, primeiro, uma
 definição sobre quais seriam e, segundo, sobre a forma de
-realocá-los.</li>
+realocá-los.</p></li>
 </ol>
 <p><br><a name="referencias"></a></p>
 </div>
