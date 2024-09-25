@@ -1432,7 +1432,8 @@ de performance sobre os tratamentos de dados do SIM-SUS.</p>
 trânsito 2020 e 2021, publicados na <a href="https://ssl.cetsp.com.br/sobre-a-cet/relatorios-corporativos.aspx" target="_blank">página de relatórios corporativos</a> da Companhia. Já
 os do Infosiga foram baixados diretamente do gráfico resumitivo acessado
 em Estatística &gt; Óbitos (filtrado somente município São Paulo) &gt;
-Exportar da <a href="https://www.infosiga.sp.gov.br/" target="_blank">página do Infosiga</a>.</p>
+Exportar da <a href="https://www.infosiga.sp.gov.br/" target="_blank">página do Infosiga</a>. Os dados do SIM-SUS foram
+filtrados pelo CODMUNOCOR == ‘355030’, referente à capital paulista.</p>
 <pre class="r"><code># Dados para CET retirados dos relatórios anuais de sinistros de trânsito 2020 e 2021:
 # https://ssl.cetsp.com.br/sobre-a-cet/relatorios-corporativos.aspx
 sat_cet &lt;- tibble(ANOOBITO = as.character(seq(2011, 2021)),
