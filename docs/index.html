@@ -490,6 +490,8 @@ sim_sus &lt;- sim_sus %&gt;% map_df(read.dbc) %&gt;% as_tibble()
 
 # Selecionar colunas de interesse para ocorrências de trânsito
 sim_sus &lt;- sim_sus %&gt;% select(DTOBITO, CAUSABAS)
+# Para comparativos com o município de São Paulo
+# sim_sus &lt;- sim_sus %&gt;% select(DTOBITO, CODMUNOCOR, CAUSABAS) %&gt;% filter(CODMUNOCOR == &#39;355030&#39;)
 
 # Criar coluna de ano da morte
 sim_sus &lt;- sim_sus %&gt;% mutate(ANOOBITO = str_sub(.$DTOBITO, -4), .before = &#39;DTOBITO&#39;)</code></pre>
@@ -1417,6 +1419,191 @@ entre 2011 e 2023.</p>
 </tbody>
 </table>
 <p><br></p>
+<div id="comparativos-com-os-dados-do-município-de-são-paulo" class="section level3">
+<h3>Comparativos com os dados do município de São Paulo</h3>
+<p><br></p>
+<p>A cidade de São Paulo teve por muitos anos dois órgãos monitorando as
+mortes no trânsito. A CET, municipal, manteve a base SAT-CET desde pelo
+menos 2009, com dados existentes até 2021. Já o Infosiga, do Governo do
+Estado, possui dados a partir de 2015 e é quem hoje quem os mantém
+atualizados. O caso paulista, portanto, permite fazer um bom comparativo
+de performance sobre os tratamentos de dados do SIM-SUS.</p>
+<p>Os dados da CET foram retirados dos relatórios anuais de sinistros de
+trânsito 2020 e 2021, publicados na <a href="https://ssl.cetsp.com.br/sobre-a-cet/relatorios-corporativos.aspx" target="_blank">página de relatórios corporativos</a> da Companhia. Já
+os do Infosiga foram baixados diretamente do gráfico resumitivo acessado
+em Estatística &gt; Óbitos (filtrado somente município São Paulo) &gt;
+Exportar da <a href="https://www.infosiga.sp.gov.br/" target="_blank">página do Infosiga</a>.</p>
+<pre class="r"><code># Dados para CET retirados dos relatórios anuais de sinistros de trânsito 2020 e 2021:
+# https://ssl.cetsp.com.br/sobre-a-cet/relatorios-corporativos.aspx
+sat_cet &lt;- tibble(ANOOBITO = as.character(seq(2011, 2021)),
+                  mortes_cet = c(1365, 1231, 1152, 1249, 992, 854, 797, 849, 791, 809, 823))
+
+# Base de dados do Infosiga baixadas da página https://www.infosiga.sp.gov.br/
+# em Estatística &gt; Óbitos (filtrado somente município São Paulo) &gt; Exportar
+infosiga &lt;- sprintf(&#39;%s/infosiga_2015_2023.csv&#39;, test_folder)
+infosiga &lt;- read_delim(infosiga, delim = &#39;,&#39;, col_types = &#39;ci&#39;)
+
+infosiga &lt;-
+  infosiga %&gt;%
+  select(ANOOBITO = ANO_OBITO, mortes_infosiga = `Quant. Óbitos`) %&gt;%
+  filter(ANOOBITO != &#39;2024&#39;)
+
+# Selecionar colunas de interesse da base do SIM-SUS
+sim_sus_sp &lt;-
+  road_injuries %&gt;%
+  left_join(subset(road_injuries_adj, select = c(ANOOBITO, new_road_inj)), by = &#39;ANOOBITO&#39;) %&gt;%
+  left_join(subset(road_injuries_adj2, select = c(ANOOBITO, new_road_inj2)), by = &#39;ANOOBITO&#39;) %&gt;%
+  rename(sim_sus_sp = road_injuries,
+         sim_sus_sp_adj1 = new_road_inj,
+         sim_sus_sp_adj2 = new_road_inj2)
+
+mortes_sp &lt;-
+  full_join(sat_cet, infosiga, by = &#39;ANOOBITO&#39;) %&gt;%
+  left_join(sim_sus_sp, by = &#39;ANOOBITO&#39;)</code></pre>
+<pre class="r"><code>mortes_sp</code></pre>
+<table>
+<colgroup>
+<col width="11%" />
+<col width="7%" />
+<col width="10%" />
+<col width="14%" />
+<col width="28%" />
+<col width="28%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Ano óbito</th>
+<th align="center">CET</th>
+<th align="center">Infosiga</th>
+<th align="center">SIM-SUS (SP)</th>
+<th align="center">SIM-SUS (SP) (Ajustado 1)</th>
+<th align="center">SIM-SUS (SP) (Ajustado 2)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">2011</td>
+<td align="center">1.365</td>
+<td align="center">NA</td>
+<td align="center">1.458</td>
+<td align="center">1.756</td>
+<td align="center">1.533</td>
+</tr>
+<tr class="even">
+<td align="center">2012</td>
+<td align="center">1.231</td>
+<td align="center">NA</td>
+<td align="center">1.323</td>
+<td align="center">1.491</td>
+<td align="center">1.348</td>
+</tr>
+<tr class="odd">
+<td align="center">2013</td>
+<td align="center">1.152</td>
+<td align="center">NA</td>
+<td align="center">1.212</td>
+<td align="center">1.354</td>
+<td align="center">1.237</td>
+</tr>
+<tr class="even">
+<td align="center">2014</td>
+<td align="center">1.249</td>
+<td align="center">NA</td>
+<td align="center">1.312</td>
+<td align="center">1.482</td>
+<td align="center">1.352</td>
+</tr>
+<tr class="odd">
+<td align="center">2015</td>
+<td align="center">992</td>
+<td align="center">1.101</td>
+<td align="center">1.069</td>
+<td align="center">1.190</td>
+<td align="center">1.108</td>
+</tr>
+<tr class="even">
+<td align="center">2016</td>
+<td align="center">854</td>
+<td align="center">929</td>
+<td align="center">913</td>
+<td align="center">1.069</td>
+<td align="center">949</td>
+</tr>
+<tr class="odd">
+<td align="center">2017</td>
+<td align="center">797</td>
+<td align="center">824</td>
+<td align="center">653</td>
+<td align="center">833</td>
+<td align="center">701</td>
+</tr>
+<tr class="even">
+<td align="center">2018</td>
+<td align="center">849</td>
+<td align="center">827</td>
+<td align="center">261</td>
+<td align="center">606</td>
+<td align="center">350</td>
+</tr>
+<tr class="odd">
+<td align="center">2019</td>
+<td align="center">791</td>
+<td align="center">799</td>
+<td align="center">690</td>
+<td align="center">1.444</td>
+<td align="center">856</td>
+</tr>
+<tr class="even">
+<td align="center">2020</td>
+<td align="center">809</td>
+<td align="center">711</td>
+<td align="center">694</td>
+<td align="center">1.520</td>
+<td align="center">785</td>
+</tr>
+<tr class="odd">
+<td align="center">2021</td>
+<td align="center">823</td>
+<td align="center">725</td>
+<td align="center">682</td>
+<td align="center">1.483</td>
+<td align="center">776</td>
+</tr>
+<tr class="even">
+<td align="center">2022</td>
+<td align="center">NA</td>
+<td align="center">863</td>
+<td align="center">251</td>
+<td align="center">608</td>
+<td align="center">334</td>
+</tr>
+<tr class="odd">
+<td align="center">2023</td>
+<td align="center">NA</td>
+<td align="center">928</td>
+<td align="center">290</td>
+<td align="center">729</td>
+<td align="center">400</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p>Ao comparar os dados do SIM-SUS sem redistribuição de códigos e
+ajustados pelos métodos 1 e 2 expostos acima, as mortes em São Paulo
+ficam sempre mais próximas aos ajustes do segundo método (alocação
+proporcional dos códigos Y34-Y87.2 e soma do código Y32). Nos anos em
+que tanto a CET quanto o Infosiga registraram as mortes, o número fica
+mais próximo aos dados da CET nos anos de 2017, 2020 e 2021 e do
+Infosiga nos anos 2015, 2016 e 2019.</p>
+<p>É notável, porém, a subnotificação de mortes presente no SIM-SUS para
+os anos de 2018, 2022 e 2023, com números muito abaixo do esperado e do
+histórico para o município. Nestes casos, nem mesmo o ajuste pelo método
+1 é capaz de chegar aos números oficiais da cidade.</p>
+<p><br></p>
+</div>
+<div id="pontos-para-discussão" class="section level3">
+<h3>Pontos para discussão</h3>
+<p><br></p>
 <p>Para chegar a uma padronização da forma como a extração de dados do
 SIM-SUS é feita para estimar o número de mortes no trânsito no Brasil,
 alguns pontos precisam ser discutidos:</p>
@@ -1428,8 +1615,12 @@ mais genéricos, frequentemente citados na literatura como <em>garbage
 codes</em> [códigos lixo]? Se sim, é preciso haver, primeiro, uma
 definição sobre quais seriam e, segundo, sobre a forma de
 realocá-los.</p></li>
+<li><p>O que houve com os dados do SIM-SUS para os anos de 2018, 2022 e
+2023? A subnotificação de mortes no trânsito é exclusiva para o
+município de São Paulo ou abrange mais municípios?</p></li>
 </ol>
 <p><br><a name="referencias"></a></p>
+</div>
 </div>
 <div id="referências" class="section level2">
 <h2>Referências</h2>
