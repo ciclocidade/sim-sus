@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2024-09-26" />
+<meta name="date" content="2024-09-30" />
 
 <title>Texto para Discussão - Padronização da extração de dados do SIM-SUS para mortes no trânsito</title>
 
@@ -374,7 +374,7 @@ display: none;
 
 <h1 class="title toc-ignore">Texto para Discussão - Padronização da
 extração de dados do SIM-SUS para mortes no trânsito</h1>
-<h4 class="date">2024-09-26</h4>
+<h4 class="date">2024-09-30</h4>
 
 </div>
 
@@ -824,7 +824,8 @@ das causas externas de morbidade e de mortalidade, assim como os números
 de sinistros de trânsito previamente extraídos e apresentados na <a href="#tabela1">Tabela 1</a>. De forma a fazer uma redistribuição
 proporcional conforme <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span>, os passos sugeridos são:</p>
 <ol style="list-style-type: decimal">
-<li><p>Extrair os valores totais de causas externas;</p></li>
+<li><p>Extrair os valores totais de causas externas (V01-Y89, exceto
+X41-X42, X44, X45);</p></li>
 <li><p>Calcular o novo valor de causas externas, excluindo os
 relacionados aos códigos de intenção não determinada (Y10-Y34,
 Y87.2);</p></li>
@@ -845,12 +846,13 @@ são apresentados a seguir.</p>
 # Injury deaths where the intent is not determined (Y10-Y34, Y87.2) are
 # distributed proportionately to all causes below the group level for injuries.
 
-# Códigos Y10-Y34, Y87.2 fazem parte das external causes, dentro das quais
-# também estão as road injuries, calculadas anteriormente
-f_expr &lt;- expr(str_starts(CAUSABAS, &#39;[VXY]&#39;))
+# Isolar causas externas - V01-Y89 (minus X41-X42, X44, X45)
+f_expr &lt;- expr(str_starts(CAUSABAS, &#39;[VWXY]&#39;) &amp; !str_starts(CAUSABAS, &#39;X4[1245]&#39;))
 external_causes &lt;- agrupar(sim_sus, f_expr, n_col = &#39;external_causes&#39;)
 
-# Isolar somente códigos Y10-Y34, Y87.2 - undetermined intent
+# Códigos Y10-Y34, Y87.2 fazem parte das external causes, dentro das quais
+# também estão as road injuries, calculadas anteriormente. Isolar somente 
+# códigos Y10-Y34, Y87.2 - undetermined intent
 f_expr &lt;- expr(str_starts(CAUSABAS, &#39;Y[12]&#39;) |
                str_starts(CAUSABAS, &#39;Y3[0-4]&#39;) |
                str_starts(CAUSABAS, &#39;Y872&#39;))
@@ -909,146 +911,146 @@ códigos de intenção indeterminada Y10-Y34, Y87.2, conforme <span class="citat
 <tbody>
 <tr class="odd">
 <td align="center">2011</td>
-<td align="center">124.028</td>
+<td align="center">145.538</td>
 <td align="center">10.422</td>
-<td align="center">113.606</td>
+<td align="center">135.116</td>
 <td align="center">41.756</td>
-<td align="center">0,37</td>
-<td align="center">3.831</td>
-<td align="center">45.587</td>
-<td align="center">9,17</td>
+<td align="center">0,31</td>
+<td align="center">3.221</td>
+<td align="center">44.977</td>
+<td align="center">7,71</td>
 </tr>
 <tr class="even">
 <td align="center">2012</td>
-<td align="center">129.443</td>
+<td align="center">151.563</td>
 <td align="center">10.127</td>
-<td align="center">119.316</td>
+<td align="center">141.436</td>
 <td align="center">43.152</td>
-<td align="center">0,36</td>
-<td align="center">3.663</td>
-<td align="center">46.815</td>
-<td align="center">8,49</td>
+<td align="center">0,31</td>
+<td align="center">3.090</td>
+<td align="center">46.242</td>
+<td align="center">7,16</td>
 </tr>
 <tr class="odd">
 <td align="center">2013</td>
-<td align="center">128.069</td>
+<td align="center">151.074</td>
 <td align="center">9.875</td>
-<td align="center">118.194</td>
+<td align="center">141.199</td>
 <td align="center">40.826</td>
-<td align="center">0,35</td>
-<td align="center">3.411</td>
-<td align="center">44.237</td>
-<td align="center">8,35</td>
+<td align="center">0,29</td>
+<td align="center">2.855</td>
+<td align="center">43.681</td>
+<td align="center">6,99</td>
 </tr>
 <tr class="even">
 <td align="center">2014</td>
-<td align="center">132.063</td>
+<td align="center">156.322</td>
 <td align="center">9.535</td>
-<td align="center">122.528</td>
+<td align="center">146.787</td>
 <td align="center">42.221</td>
-<td align="center">0,34</td>
-<td align="center">3.286</td>
-<td align="center">45.507</td>
-<td align="center">7,78</td>
+<td align="center">0,29</td>
+<td align="center">2.743</td>
+<td align="center">44.964</td>
+<td align="center">6,50</td>
 </tr>
 <tr class="odd">
 <td align="center">2015</td>
-<td align="center">126.624</td>
+<td align="center">151.433</td>
 <td align="center">9.862</td>
-<td align="center">116.762</td>
+<td align="center">141.571</td>
 <td align="center">37.321</td>
-<td align="center">0,32</td>
-<td align="center">3.152</td>
-<td align="center">40.473</td>
-<td align="center">8,45</td>
+<td align="center">0,26</td>
+<td align="center">2.600</td>
+<td align="center">39.921</td>
+<td align="center">6,97</td>
 </tr>
 <tr class="even">
 <td align="center">2016</td>
-<td align="center">129.438</td>
+<td align="center">155.184</td>
 <td align="center">10.330</td>
-<td align="center">119.108</td>
+<td align="center">144.854</td>
 <td align="center">36.165</td>
-<td align="center">0,30</td>
-<td align="center">3.137</td>
-<td align="center">39.302</td>
-<td align="center">8,67</td>
+<td align="center">0,25</td>
+<td align="center">2.579</td>
+<td align="center">38.744</td>
+<td align="center">7,13</td>
 </tr>
 <tr class="odd">
 <td align="center">2017</td>
-<td align="center">131.217</td>
+<td align="center">158.042</td>
 <td align="center">9.866</td>
-<td align="center">121.351</td>
+<td align="center">148.176</td>
 <td align="center">34.310</td>
-<td align="center">0,28</td>
-<td align="center">2.789</td>
-<td align="center">37.099</td>
-<td align="center">8,13</td>
+<td align="center">0,23</td>
+<td align="center">2.284</td>
+<td align="center">36.594</td>
+<td align="center">6,66</td>
 </tr>
 <tr class="even">
 <td align="center">2018</td>
-<td align="center">123.312</td>
+<td align="center">150.186</td>
 <td align="center">12.371</td>
-<td align="center">110.941</td>
+<td align="center">137.815</td>
 <td align="center">31.549</td>
-<td align="center">0,28</td>
-<td align="center">3.518</td>
-<td align="center">35.067</td>
-<td align="center">11,15</td>
+<td align="center">0,23</td>
+<td align="center">2.832</td>
+<td align="center">34.381</td>
+<td align="center">8,98</td>
 </tr>
 <tr class="odd">
 <td align="center">2019</td>
-<td align="center">115.154</td>
+<td align="center">142.277</td>
 <td align="center">16.694</td>
-<td align="center">98.460</td>
+<td align="center">125.583</td>
 <td align="center">30.836</td>
-<td align="center">0,31</td>
-<td align="center">5.228</td>
-<td align="center">36.064</td>
-<td align="center">16,95</td>
+<td align="center">0,25</td>
+<td align="center">4.099</td>
+<td align="center">34.935</td>
+<td align="center">13,29</td>
 </tr>
 <tr class="even">
 <td align="center">2020</td>
-<td align="center">118.239</td>
+<td align="center">145.433</td>
 <td align="center">14.101</td>
-<td align="center">104.138</td>
+<td align="center">131.332</td>
 <td align="center">31.644</td>
-<td align="center">0,30</td>
-<td align="center">4.285</td>
-<td align="center">35.929</td>
-<td align="center">13,54</td>
+<td align="center">0,24</td>
+<td align="center">3.398</td>
+<td align="center">35.042</td>
+<td align="center">10,74</td>
 </tr>
 <tr class="odd">
 <td align="center">2021</td>
-<td align="center">119.257</td>
+<td align="center">148.770</td>
 <td align="center">13.903</td>
-<td align="center">105.354</td>
+<td align="center">134.867</td>
 <td align="center">32.981</td>
-<td align="center">0,31</td>
-<td align="center">4.352</td>
-<td align="center">37.333</td>
-<td align="center">13,20</td>
+<td align="center">0,24</td>
+<td align="center">3.400</td>
+<td align="center">36.381</td>
+<td align="center">10,31</td>
 </tr>
 <tr class="even">
 <td align="center">2022</td>
-<td align="center">120.903</td>
+<td align="center">152.393</td>
 <td align="center">15.579</td>
-<td align="center">105.324</td>
+<td align="center">136.814</td>
 <td align="center">32.989</td>
-<td align="center">0,31</td>
-<td align="center">4.880</td>
-<td align="center">37.869</td>
-<td align="center">14,79</td>
+<td align="center">0,24</td>
+<td align="center">3.756</td>
+<td align="center">36.745</td>
+<td align="center">11,39</td>
 </tr>
 <tr class="odd">
 <td align="center">2023</td>
-<td align="center">120.683</td>
+<td align="center">152.516</td>
 <td align="center">17.585</td>
-<td align="center">103.098</td>
+<td align="center">134.931</td>
 <td align="center">32.883</td>
-<td align="center">0,32</td>
-<td align="center">5.609</td>
-<td align="center">38.492</td>
-<td align="center">17,06</td>
+<td align="center">0,24</td>
+<td align="center">4.286</td>
+<td align="center">37.169</td>
+<td align="center">13,03</td>
 </tr>
 </tbody>
 </table>
@@ -1146,132 +1148,132 @@ serem as mesmas da <a href="#tabela2">Tabela 2</a>.</p>
 <tr class="odd">
 <td align="center">2011</td>
 <td align="center">41.756</td>
-<td align="center">0,37</td>
+<td align="center">0,31</td>
 <td align="center">5.638</td>
-<td align="center">2.072</td>
+<td align="center">1.742</td>
 <td align="center">30</td>
-<td align="center">43.858</td>
-<td align="center">5,03</td>
+<td align="center">43.528</td>
+<td align="center">4,24</td>
 </tr>
 <tr class="even">
 <td align="center">2012</td>
 <td align="center">43.152</td>
-<td align="center">0,36</td>
+<td align="center">0,31</td>
 <td align="center">5.043</td>
-<td align="center">1.824</td>
+<td align="center">1.539</td>
 <td align="center">18</td>
-<td align="center">44.994</td>
-<td align="center">4,27</td>
+<td align="center">44.709</td>
+<td align="center">3,61</td>
 </tr>
 <tr class="odd">
 <td align="center">2013</td>
 <td align="center">40.826</td>
-<td align="center">0,35</td>
+<td align="center">0,29</td>
 <td align="center">5.352</td>
-<td align="center">1.849</td>
+<td align="center">1.547</td>
 <td align="center">19</td>
-<td align="center">42.694</td>
-<td align="center">4,58</td>
+<td align="center">42.392</td>
+<td align="center">3,84</td>
 </tr>
 <tr class="even">
 <td align="center">2014</td>
 <td align="center">42.221</td>
-<td align="center">0,34</td>
+<td align="center">0,29</td>
 <td align="center">4.894</td>
-<td align="center">1.686</td>
+<td align="center">1.408</td>
 <td align="center">18</td>
-<td align="center">43.925</td>
-<td align="center">4,04</td>
+<td align="center">43.647</td>
+<td align="center">3,38</td>
 </tr>
 <tr class="odd">
 <td align="center">2015</td>
 <td align="center">37.321</td>
-<td align="center">0,32</td>
+<td align="center">0,26</td>
 <td align="center">5.316</td>
-<td align="center">1.699</td>
+<td align="center">1.401</td>
 <td align="center">14</td>
-<td align="center">39.034</td>
-<td align="center">4,59</td>
+<td align="center">38.736</td>
+<td align="center">3,79</td>
 </tr>
 <tr class="even">
 <td align="center">2016</td>
 <td align="center">36.165</td>
-<td align="center">0,30</td>
+<td align="center">0,25</td>
 <td align="center">5.830</td>
-<td align="center">1.770</td>
+<td align="center">1.456</td>
 <td align="center">13</td>
-<td align="center">37.948</td>
-<td align="center">4,93</td>
+<td align="center">37.634</td>
+<td align="center">4,06</td>
 </tr>
 <tr class="odd">
 <td align="center">2017</td>
 <td align="center">34.310</td>
-<td align="center">0,28</td>
+<td align="center">0,23</td>
 <td align="center">5.627</td>
-<td align="center">1.591</td>
+<td align="center">1.303</td>
 <td align="center">10</td>
-<td align="center">35.911</td>
-<td align="center">4,67</td>
+<td align="center">35.623</td>
+<td align="center">3,83</td>
 </tr>
 <tr class="even">
 <td align="center">2018</td>
 <td align="center">31.549</td>
-<td align="center">0,28</td>
+<td align="center">0,23</td>
 <td align="center">6.385</td>
-<td align="center">1.816</td>
+<td align="center">1.462</td>
 <td align="center">13</td>
-<td align="center">33.378</td>
-<td align="center">5,80</td>
+<td align="center">33.024</td>
+<td align="center">4,68</td>
 </tr>
 <tr class="odd">
 <td align="center">2019</td>
 <td align="center">30.836</td>
-<td align="center">0,31</td>
+<td align="center">0,25</td>
 <td align="center">9.662</td>
-<td align="center">3.026</td>
+<td align="center">2.372</td>
 <td align="center">19</td>
-<td align="center">33.881</td>
-<td align="center">9,87</td>
+<td align="center">33.227</td>
+<td align="center">7,75</td>
 </tr>
 <tr class="even">
 <td align="center">2020</td>
 <td align="center">31.644</td>
-<td align="center">0,30</td>
+<td align="center">0,24</td>
 <td align="center">7.732</td>
-<td align="center">2.349</td>
+<td align="center">1.863</td>
 <td align="center">15</td>
-<td align="center">34.008</td>
-<td align="center">7,47</td>
+<td align="center">33.522</td>
+<td align="center">5,93</td>
 </tr>
 <tr class="odd">
 <td align="center">2021</td>
 <td align="center">32.981</td>
-<td align="center">0,31</td>
+<td align="center">0,24</td>
 <td align="center">7.689</td>
-<td align="center">2.407</td>
+<td align="center">1.880</td>
 <td align="center">29</td>
-<td align="center">35.417</td>
-<td align="center">7,39</td>
+<td align="center">34.890</td>
+<td align="center">5,79</td>
 </tr>
 <tr class="even">
 <td align="center">2022</td>
 <td align="center">32.989</td>
-<td align="center">0,31</td>
+<td align="center">0,24</td>
 <td align="center">8.967</td>
-<td align="center">2.809</td>
+<td align="center">2.162</td>
 <td align="center">35</td>
-<td align="center">35.833</td>
-<td align="center">8,62</td>
+<td align="center">35.186</td>
+<td align="center">6,66</td>
 </tr>
 <tr class="odd">
 <td align="center">2023</td>
 <td align="center">32.883</td>
-<td align="center">0,32</td>
+<td align="center">0,24</td>
 <td align="center">10.144</td>
-<td align="center">3.235</td>
+<td align="center">2.472</td>
 <td align="center">44</td>
-<td align="center">36.162</td>
-<td align="center">9,97</td>
+<td align="center">35.399</td>
+<td align="center">7,65</td>
 </tr>
 </tbody>
 </table>
@@ -1315,106 +1317,106 @@ entre 2011 e 2023.</p>
 <tr class="odd">
 <td align="center">2011</td>
 <td align="center">41.756</td>
-<td align="center">45.587</td>
-<td align="center">9,17</td>
-<td align="center">43.858</td>
-<td align="center">5,03</td>
+<td align="center">44.977</td>
+<td align="center">7,71</td>
+<td align="center">43.528</td>
+<td align="center">4,24</td>
 </tr>
 <tr class="even">
 <td align="center">2012</td>
 <td align="center">43.152</td>
-<td align="center">46.815</td>
-<td align="center">8,49</td>
-<td align="center">44.994</td>
-<td align="center">4,27</td>
+<td align="center">46.242</td>
+<td align="center">7,16</td>
+<td align="center">44.709</td>
+<td align="center">3,61</td>
 </tr>
 <tr class="odd">
 <td align="center">2013</td>
 <td align="center">40.826</td>
-<td align="center">44.237</td>
-<td align="center">8,35</td>
-<td align="center">42.694</td>
-<td align="center">4,58</td>
+<td align="center">43.681</td>
+<td align="center">6,99</td>
+<td align="center">42.392</td>
+<td align="center">3,84</td>
 </tr>
 <tr class="even">
 <td align="center">2014</td>
 <td align="center">42.221</td>
-<td align="center">45.507</td>
-<td align="center">7,78</td>
-<td align="center">43.925</td>
-<td align="center">4,04</td>
+<td align="center">44.964</td>
+<td align="center">6,50</td>
+<td align="center">43.647</td>
+<td align="center">3,38</td>
 </tr>
 <tr class="odd">
 <td align="center">2015</td>
 <td align="center">37.321</td>
-<td align="center">40.473</td>
-<td align="center">8,45</td>
-<td align="center">39.034</td>
-<td align="center">4,59</td>
+<td align="center">39.921</td>
+<td align="center">6,97</td>
+<td align="center">38.736</td>
+<td align="center">3,79</td>
 </tr>
 <tr class="even">
 <td align="center">2016</td>
 <td align="center">36.165</td>
-<td align="center">39.302</td>
-<td align="center">8,67</td>
-<td align="center">37.948</td>
-<td align="center">4,93</td>
+<td align="center">38.744</td>
+<td align="center">7,13</td>
+<td align="center">37.634</td>
+<td align="center">4,06</td>
 </tr>
 <tr class="odd">
 <td align="center">2017</td>
 <td align="center">34.310</td>
-<td align="center">37.099</td>
-<td align="center">8,13</td>
-<td align="center">35.911</td>
-<td align="center">4,67</td>
+<td align="center">36.594</td>
+<td align="center">6,66</td>
+<td align="center">35.623</td>
+<td align="center">3,83</td>
 </tr>
 <tr class="even">
 <td align="center">2018</td>
 <td align="center">31.549</td>
-<td align="center">35.067</td>
-<td align="center">11,15</td>
-<td align="center">33.378</td>
-<td align="center">5,80</td>
+<td align="center">34.381</td>
+<td align="center">8,98</td>
+<td align="center">33.024</td>
+<td align="center">4,68</td>
 </tr>
 <tr class="odd">
 <td align="center">2019</td>
 <td align="center">30.836</td>
-<td align="center">36.064</td>
-<td align="center">16,95</td>
-<td align="center">33.881</td>
-<td align="center">9,87</td>
+<td align="center">34.935</td>
+<td align="center">13,29</td>
+<td align="center">33.227</td>
+<td align="center">7,75</td>
 </tr>
 <tr class="even">
 <td align="center">2020</td>
 <td align="center">31.644</td>
-<td align="center">35.929</td>
-<td align="center">13,54</td>
-<td align="center">34.008</td>
-<td align="center">7,47</td>
+<td align="center">35.042</td>
+<td align="center">10,74</td>
+<td align="center">33.522</td>
+<td align="center">5,93</td>
 </tr>
 <tr class="odd">
 <td align="center">2021</td>
 <td align="center">32.981</td>
-<td align="center">37.333</td>
-<td align="center">13,20</td>
-<td align="center">35.417</td>
-<td align="center">7,39</td>
+<td align="center">36.381</td>
+<td align="center">10,31</td>
+<td align="center">34.890</td>
+<td align="center">5,79</td>
 </tr>
 <tr class="even">
 <td align="center">2022</td>
 <td align="center">32.989</td>
-<td align="center">37.869</td>
-<td align="center">14,79</td>
-<td align="center">35.833</td>
-<td align="center">8,62</td>
+<td align="center">36.745</td>
+<td align="center">11,39</td>
+<td align="center">35.186</td>
+<td align="center">6,66</td>
 </tr>
 <tr class="odd">
 <td align="center">2023</td>
 <td align="center">32.883</td>
-<td align="center">38.492</td>
-<td align="center">17,06</td>
-<td align="center">36.162</td>
-<td align="center">9,97</td>
+<td align="center">37.169</td>
+<td align="center">13,03</td>
+<td align="center">35.399</td>
+<td align="center">7,65</td>
 </tr>
 </tbody>
 </table>
@@ -1492,115 +1494,115 @@ mortes_sp &lt;-
 <td align="center">1.365</td>
 <td align="center">NA</td>
 <td align="center">1.458</td>
-<td align="center">1.756</td>
-<td align="center">1.533</td>
+<td align="center">1.686</td>
+<td align="center">1.516</td>
 </tr>
 <tr class="even">
 <td align="center">2012</td>
 <td align="center">1.231</td>
 <td align="center">NA</td>
 <td align="center">1.323</td>
-<td align="center">1.491</td>
-<td align="center">1.348</td>
+<td align="center">1.452</td>
+<td align="center">1.343</td>
 </tr>
 <tr class="odd">
 <td align="center">2013</td>
 <td align="center">1.152</td>
 <td align="center">NA</td>
 <td align="center">1.212</td>
-<td align="center">1.354</td>
-<td align="center">1.237</td>
+<td align="center">1.321</td>
+<td align="center">1.231</td>
 </tr>
 <tr class="even">
 <td align="center">2014</td>
 <td align="center">1.249</td>
 <td align="center">NA</td>
 <td align="center">1.312</td>
-<td align="center">1.482</td>
-<td align="center">1.352</td>
+<td align="center">1.446</td>
+<td align="center">1.343</td>
 </tr>
 <tr class="odd">
 <td align="center">2015</td>
 <td align="center">992</td>
 <td align="center">1.101</td>
 <td align="center">1.069</td>
-<td align="center">1.190</td>
-<td align="center">1.108</td>
+<td align="center">1.156</td>
+<td align="center">1.098</td>
 </tr>
 <tr class="even">
 <td align="center">2016</td>
 <td align="center">854</td>
 <td align="center">929</td>
 <td align="center">913</td>
-<td align="center">1.069</td>
-<td align="center">949</td>
+<td align="center">1.030</td>
+<td align="center">940</td>
 </tr>
 <tr class="odd">
 <td align="center">2017</td>
 <td align="center">797</td>
 <td align="center">824</td>
 <td align="center">653</td>
-<td align="center">833</td>
-<td align="center">701</td>
+<td align="center">787</td>
+<td align="center">688</td>
 </tr>
 <tr class="even">
 <td align="center">2018</td>
 <td align="center">849</td>
 <td align="center">827</td>
 <td align="center">261</td>
-<td align="center">606</td>
-<td align="center">350</td>
+<td align="center">511</td>
+<td align="center">326</td>
 </tr>
 <tr class="odd">
 <td align="center">2019</td>
 <td align="center">791</td>
 <td align="center">799</td>
 <td align="center">690</td>
-<td align="center">1.444</td>
-<td align="center">856</td>
+<td align="center">1.253</td>
+<td align="center">814</td>
 </tr>
 <tr class="even">
 <td align="center">2020</td>
 <td align="center">809</td>
 <td align="center">711</td>
 <td align="center">694</td>
-<td align="center">1.520</td>
-<td align="center">785</td>
+<td align="center">1.333</td>
+<td align="center">764</td>
 </tr>
 <tr class="odd">
 <td align="center">2021</td>
 <td align="center">823</td>
 <td align="center">725</td>
 <td align="center">682</td>
-<td align="center">1.483</td>
-<td align="center">776</td>
+<td align="center">1.267</td>
+<td align="center">751</td>
 </tr>
 <tr class="even">
 <td align="center">2022</td>
 <td align="center">NA</td>
 <td align="center">863</td>
 <td align="center">251</td>
-<td align="center">608</td>
-<td align="center">334</td>
+<td align="center">486</td>
+<td align="center">305</td>
 </tr>
 <tr class="odd">
 <td align="center">2023</td>
 <td align="center">NA</td>
 <td align="center">928</td>
 <td align="center">290</td>
-<td align="center">729</td>
-<td align="center">400</td>
+<td align="center">579</td>
+<td align="center">363</td>
 </tr>
 </tbody>
 </table>
 <p><br></p>
 <p>Ao comparar os dados do SIM-SUS sem redistribuição de códigos e
 ajustados pelos métodos 1 e 2 expostos acima, as mortes em São Paulo
-ficam sempre mais próximas aos ajustes do segundo método (alocação
+ficam quase sempre mais próximas aos ajustes do segundo método (alocação
 proporcional dos códigos Y34-Y87.2 e soma do código Y32). Nos anos em
 que tanto a CET quanto o Infosiga registraram as mortes, o número fica
-mais próximo aos dados da CET nos anos de 2017, 2020 e 2021 e do
-Infosiga nos anos 2015, 2016 e 2019.</p>
+mais próximo aos dados da CET nos anos de 2017 e 2020 e do Infosiga nos
+anos 2015, 2016 e 2019 e 2021.</p>
 <p>É notável, porém, a subnotificação de mortes presente no SIM-SUS para
 os anos de 2018, 2022 e 2023, com números muito abaixo do esperado e do
 histórico para o município. Nestes casos, nem mesmo o ajuste pelo método
