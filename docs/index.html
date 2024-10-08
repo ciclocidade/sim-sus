@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2024-10-02" />
+<meta name="date" content="2024-10-08" />
 
 <title>Texto para Discussão - Padronização da extração de dados do SIM-SUS para mortes no trânsito</title>
 
@@ -374,7 +374,7 @@ display: none;
 
 <h1 class="title toc-ignore">Texto para Discussão - Padronização da
 extração de dados do SIM-SUS para mortes no trânsito</h1>
-<h4 class="date">2024-10-02</h4>
+<h4 class="date">2024-10-08</h4>
 
 </div>
 
@@ -498,11 +498,11 @@ sim_sus &lt;- sim_sus %&gt;% mutate(ANOOBITO = str_sub(.$DTOBITO, -4), .before =
 <p><br></p>
 <p>As causas básicas da CID-10 a serem consideradas como sinistros de
 trânsito são definidas no documento <strong>WHO methods and data sources
-for country-level causes of death 2000-2019</strong> [Métodos e fontes
-de dados da OMS para as causas de morte a nível nacional 2000-2019]
-<span class="citation">(<a href="#ref-who2020">WHO, 2020</a>)</span>.
-Para países em que a CID-10 possui quatro caracteres, como é o caso do
-Brasil, os códigos a serem filtrados são os seguintes:</p>
+for country-level causes of death 2000-2019 and 2000-2021</strong>
+[Métodos e fontes de dados da OMS para as causas de morte a nível
+nacional 2000-2019 e 2000-2021] <span class="citation">(<a href="#ref-who2020">WHO, 2020</a>, <a href="#ref-who2024">2024</a>)</span>. Para países em que a CID-10 possui
+quatro caracteres, como é o caso do Brasil, os códigos a serem filtrados
+são os seguintes, tendo como base <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span>:</p>
 <pre><code>V01-V04 (.1-.9), V06 (.1-.9), V09 (.2-.3), V10- V14 (.3-.9), V15-V19 (.4-.9), V20-V28 (.3-.9), V29- V79 (.4-.9), V80 (.3-.5), V81.1, V82 (.1, .8-.9), V83-V86 (.0-.3), V87 (.0-.9), V89 (.2-.3, .9), V99, Y85.0</code></pre>
 <p><br></p>
 <p>O script em R para executar este filtro e agrupar os resultados por
@@ -1108,8 +1108,8 @@ vehicle, undetermined intent</em>].</p>
 <p>Isso garantiria uma redistribuição proporcional dos registros
 indeterminados junto à soma de um código que está diretamente
 relacionado a sinistros de trânsito. Tais valores poderiam ser
-subdivididos proporcionalmente nas duas categorias presentes no
-documento da <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span>, “ferimentos não intencionais” e
+subdivididos proporcionalmente nas duas categorias presentes nos
+documentos <span class="citation">WHO (<a href="#ref-who2020">2020</a>)</span> e <span class="citation">WHO (<a href="#ref-who2024">2024</a>)</span> “ferimentos não intencionais” e
 “ferimentos intencionais”. Para este <strong>Texto para
 discussão</strong>, esta nova subdivisão não será feita, assumindo, na
 prática, que todos os números realocados referir-se-ão a “ferimentos não
